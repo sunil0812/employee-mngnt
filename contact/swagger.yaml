@@ -1,0 +1,413 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /emp/update/{empId}/{status}:
+    put:
+      tags:
+        - employee-controller
+      operationId: updateEmployee
+      parameters:
+        - name: empId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeEntity'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /team/saveTeam:
+    post:
+      tags:
+        - team-controller
+      operationId: saveTeam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Team'
+  /emp/save:
+    post:
+      tags:
+        - employee-controller
+      operationId: saveEmployee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeEntity'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Employee'
+  /team/teamName:
+    get:
+      tags:
+        - team-controller
+      operationId: getTeamName
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamData'
+  /team/getTeam:
+    get:
+      tags:
+        - team-controller
+      operationId: getAllTeam
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+  /team/getTeam/{id}:
+    get:
+      tags:
+        - team-controller
+      operationId: getTeam
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamResponse'
+  /emp/getEmployee:
+    get:
+      tags:
+        - employee-controller
+      operationId: getAllEmployee
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+  /emp/getEmployee/{empId}:
+    get:
+      tags:
+        - employee-controller
+      operationId: getEmployee
+      parameters:
+        - name: empId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseEmployeeResponse'
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        "no":
+          type: string
+          description: Street no of the employee
+          example: "123"
+        street:
+          type: string
+          description: Street address of the employee
+          example: ' Main St'
+        pinCode:
+          type: string
+          description: Pin code of the employee
+          example: "10001"
+        country:
+          type: string
+          description: Country of the employee
+          example: USA
+      description: Address of the employee
+    BankDetails:
+      type: object
+      properties:
+        accountNo:
+          type: string
+          description: Account number of the employee
+          example: "1234567890"
+        ifscCode:
+          type: string
+          description: IFSC code of the bank
+          example: IFSC1234
+      description: Bank details of the employee
+    EmployeeEntity:
+      required:
+        - address
+        - bankDetails
+        - dob
+        - email
+        - empType
+        - gender
+        - managerEmpId
+        - name
+        - phone
+        - role
+        - teamName
+      type: object
+      properties:
+        name:
+          pattern: "^[\\p{L} .'-]+$"
+          type: string
+          description: Name of the employee
+          example: John Doe
+        role:
+          type: string
+          description: Role of the employee
+          example: software_engineer
+        email:
+          type: string
+          description: Email address of the employee
+          example: johndoe@example.com
+        phone:
+          type: string
+          description: Phone number of the employee
+          example: "+1234567890"
+        gender:
+          type: string
+          description: Gender of the employee
+          example: Male
+        dob:
+          type: string
+          description: Date of birth of the employee
+          format: date-time
+        empType:
+          type: string
+          description: Type of employment
+          example: Full-Time
+        managerEmpId:
+          type: string
+          description: Manager's employee ID
+          example: MGR123
+        teamName:
+          type: string
+          description: Name of the employee's team
+          example: Development Team
+        teamId:
+          type: integer
+          description: ID of the employee's team
+          format: int64
+          example: 101
+        bankDetails:
+          $ref: '#/components/schemas/BankDetails'
+        address:
+          $ref: '#/components/schemas/Address'
+    TeamRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        managerEmpId:
+          type: string
+        teamCount:
+          type: integer
+          format: int32
+        teamMembers:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        deleted:
+          type: boolean
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        managerEmpId:
+          type: string
+        teamCount:
+          type: integer
+          format: int32
+        teamMembers:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Employee:
+      type: object
+      properties:
+        empId:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        gender:
+          type: string
+        dob:
+          type: string
+          format: date-time
+        empType:
+          type: string
+        bankDetails:
+          type: string
+        address:
+          type: string
+        deleted:
+          type: boolean
+        teamId:
+          $ref: '#/components/schemas/Team'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        active:
+          type: boolean
+    TeamData:
+      type: object
+      properties:
+        managerId:
+          type: string
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            type: string
+    TeamResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            type: string
+        managerEmpId:
+          type: string
+        teamCount:
+          type: integer
+          format: int32
+        managerName:
+          type: string
+    BaseEmployeeResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        employeeResponse:
+          $ref: '#/components/schemas/EmployeeResponse'
+        managerResponse:
+          $ref: '#/components/schemas/ManagerResponse'
+    EmployeeResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        empId:
+          type: string
+        role:
+          type: string
+        email:
+          type: string
+        gender:
+          type: string
+        phone:
+          type: string
+        teamName:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        bankDetails:
+          $ref: '#/components/schemas/BankDetails'
+        manager:
+          $ref: '#/components/schemas/ManagerData'
+    ManagerData:
+      type: object
+      properties:
+        name:
+          type: string
+        empId:
+          type: string
+    ManagerResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        empId:
+          type: string
+        role:
+          type: string
+        email:
+          type: string
+        gender:
+          type: string
+        phone:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        bankDetails:
+          $ref: '#/components/schemas/BankDetails'
+        teamData:
+          $ref: '#/components/schemas/TeamData'

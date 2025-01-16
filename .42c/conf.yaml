@@ -1,0 +1,5 @@
+apis:
+  contact/swagger.yml:
+    alias: "employee-management-api"
+  contact/contract.yaml:
+    alias: "openapi-definition"

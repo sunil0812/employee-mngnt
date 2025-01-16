@@ -1,0 +1,19 @@
+{
+  "name": "Rayan stud Z",
+  "role": "software_engineer",
+  "email": "Rayan985@example.com",
+  "phone": "+91 1234566789",
+  "gender": "M",
+  "dob": "20-22-2012",
+  "empType": "F",
+  "bankDetails": {
+    "accountNo": "1134567830",
+    "ifscCode": "XYZB0001234"
+  },
+  "address": {
+    "no":"1",
+    "street": "123 Main St",
+    "pinCode": "62704",
+    "country": "USA"
+  }
+}

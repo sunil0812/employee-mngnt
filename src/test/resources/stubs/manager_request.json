@@ -1,0 +1,20 @@
+{
+  "name": "patrick c",
+  "role": "manager",
+  "email": "pat23@gmail.com",
+  "phone": "+91 1234562893",
+  "gender": "M",
+  "dob": "02-12-2024",
+  "empType": "F",
+  "teamName": "team 1",
+  "bankDetails": {
+    "accountNo": "1234567890",
+    "ifscCode": "XYZB0001234"
+  },
+  "address": {
+    "no":"1",
+    "street": "123 Main St",
+    "pinCode": "62704",
+    "country": "USA"
+  }
+}
