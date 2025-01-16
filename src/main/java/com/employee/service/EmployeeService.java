@@ -412,6 +412,7 @@ public class EmployeeService {
         if (emp == null || emp.isEmpty()) throw new EmployeeExceptions("No Data found");
 //        emp.stream().filter(employee -> employee.getUpdatedAt() != null && employee.getCreatedAt() != null).forEach(EmployeeService::formatTimestamp);
         return emp;
+
     }
 
     public static void formatTimestamp(Employee emp) {
