@@ -409,7 +409,6 @@ public class EmployeeService {
 
     public List<Employee> getAllEmpResponse() {
         List<Employee> emp = repo.findAll();
-        System.out.println("hii --> ");
         if (emp == null || emp.isEmpty()) throw new EmployeeExceptions("No Data found");
 //        emp.stream().filter(employee -> employee.getUpdatedAt() != null && employee.getCreatedAt() != null).forEach(EmployeeService::formatTimestamp);
         return emp;
