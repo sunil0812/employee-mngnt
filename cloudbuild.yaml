@@ -30,3 +30,4 @@ steps:
 
 images:
   - 'gcr.io/impactful-arbor-399720/github.com/sunil0812/employee-mngnt:$COMMIT_SHA'
+
