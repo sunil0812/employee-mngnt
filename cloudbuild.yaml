@@ -1,0 +1,33 @@
+steps:
+  # Step 1: Build the Docker image using the specified command
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/impactful-arbor-399720/github.com/sunil0812/employee-mngnt:$COMMIT_SHA'
+      - '.'
+
+  # Step 2: Push the Docker image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/impactful-arbor-399720/github.com/sunil0812/employee-mngnt:$COMMIT_SHA'
+
+  # Step 3: Deploy to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'run'
+      - 'deploy'
+      - 'employee-mngnt-service'  # Name of the Cloud Run service
+      - '--image'
+      - 'gcr.io/impactful-arbor-399720/github.com/sunil0812/employee-mngnt:$COMMIT_SHA'  # Image URL in GCR
+      - '--region'
+      - 'us-central1'  # Choose the region where you want to deploy
+      - '--platform'
+      - 'managed'  # This uses fully managed Cloud Run
+      - '--allow-unauthenticated'  # Allow public access (optional)
+
+images:
+  - 'gcr.io/impactful-arbor-399720/github.com/sunil0812/employee-mngnt:$COMMIT_SHA'
+
