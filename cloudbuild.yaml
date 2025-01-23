@@ -1,0 +1,23 @@
+steps:
+  # Step 1: Checkout the source code
+  - name: 'gcr.io/cloud-builders/git'
+    args: ['clone', 'https://github.com/sunil0812/employee-mngnt.git']
+
+  # Step 2: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/impactful-arbor-399720/your-image:$COMMIT_SHA', '.']
+
+  # Step 3: Push the Docker image to Google Container Registry (GCR)
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/impactful-arbor-399720/your-image:$COMMIT_SHA']
+
+  # Step 4: Deploy to Google Kubernetes Engine (GKE) (optional step)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['container', 'clusters', 'get-credentials', 'your-cluster', '--zone', 'your-zone', '--project', 'impactful-arbor-399720']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['kubectl', 'set', 'image', 'deployment/your-deployment', 'your-container=gcr.io/impactful-arbor-399720/your-image:$COMMIT_SHA']
+
+timeout: '1200s'  # Optional: Define a timeout for the build
+images:
+  - 'gcr.io/impactful-arbor-399720/your-image:$COMMIT_SHA'  # Optional: Define the image to push to registry
