@@ -6,8 +6,8 @@ steps:
     args: ['clone', 'https://github.com/sunil0812/employee-mngnt.git']
 
   # Step 2: Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA', '.']
+  - name: 'gcr.io/buildpacks/builder'
+    args: [ '-t', 'gcr.io/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA', '.' ]
 
   # Step 3: Push the Docker image to Google Container Registry (GCR)
   - name: 'gcr.io/cloud-builders/docker'
