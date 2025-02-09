@@ -52,7 +52,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/update/{empId}")
-    public ResponseEntity<UpdateResponse> updateEmployee(@PathVariable String empId, @RequestBody EmployeeEntity currentValue, @PathVariable String status) {
+    public ResponseEntity<UpdateResponse> updateEmployee(@PathVariable String empId, @RequestBody EmployeeEntity currentValue) {
 
         return ResponseEntity.ok(service.updateDetails(empId, currentValue));
     }

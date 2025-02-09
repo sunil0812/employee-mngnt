@@ -1,6 +1,5 @@
 package com.employee.controller;
 
-import com.employee.entity.dto.TeamResponseDto;
 import com.employee.entity.request.TeamRequest;
 import com.employee.entity.response.TeamData;
 import com.employee.entity.response.TeamResponse;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/team")
@@ -26,12 +24,12 @@ public class TeamController {
     @Autowired
     private TeamService service;
 
-    @Autowired
-    private EmployeeService empService;
+
     @GetMapping("/getTeam/{id}")
     public ResponseEntity<TeamResponse> getTeam(@PathVariable int id) {
         return ResponseEntity.ok(service.getTeamData(id));
     }
+
     @GetMapping("/getTeam")
     public ResponseEntity<List<Team>> getAllTeam() {
         return ResponseEntity.ok(service.getAllTeam());
@@ -43,7 +41,7 @@ public class TeamController {
     }
 
     @GetMapping("/teamName")
-    public ResponseEntity<List<TeamData>> getTeamName(){
+    public ResponseEntity<List<TeamData>> getTeamName() {
         return ResponseEntity.ok(service.getAllTeamName());
     }
 
