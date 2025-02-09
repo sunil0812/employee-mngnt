@@ -2,10 +2,8 @@ package com.employee.service;
 
 import com.employee.configuration.StatusConfiguration;
 import com.employee.entity.dto.EmployeeResponseDto;
-
 import com.employee.entity.request.EmployeeEntity;
 import com.employee.entity.response.BaseEmployeeResponse;
-
 import com.employee.entity.response.UpdateResponse;
 import com.employee.exception.EmployeeExceptions;
 import com.employee.model.Address;
@@ -24,15 +22,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,7 +36,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -67,7 +62,7 @@ class EmployeeServiceTest {
     private StatusConfiguration statusConfiguration;
 
     @Test
-    void given_employee_data_when_developer_then_save() throws Exception {
+    void given_employee_data_when_developer_then_save() {
         //        given
         EmployeeEntity req = EmployeeEntity.builder().name("name N").email("name@gmail.com").teamName("team1").gender("M").empType("F").role("software_engineer").managerEmpId("MG12").build();
 
@@ -106,7 +101,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void given_employee_data_when_add_team_members_then_save() throws Exception {
+    void given_employee_data_when_add_team_members_then_save()  {
         //        given
         EmployeeEntity req = EmployeeEntity.builder().name("name1 N").email("name@gmail.com").teamName("team1").gender("M").empType("F").role("software_engineer").managerEmpId("MG12").build();
 
@@ -149,7 +144,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void given_employee_data_when_developer_then_no_manager_not_save() throws Exception {
+    void given_employee_data_when_developer_then_no_manager_not_save() {
         //        given
         EmployeeEntity req = EmployeeEntity.builder().name("name N").email("name@gmail.com").teamName("team1").gender("M").empType("F").role("software_engineer").managerEmpId("man1").build();
 
@@ -157,8 +152,6 @@ class EmployeeServiceTest {
         team.setName("team1");
         team.setTeamMembers(new ArrayList<>());
         team.setTeamCount(0);
-
-        Manager manager = new Manager();
 
         Employee emp = new Employee();
         emp.setEmpId("NEF109");
@@ -184,7 +177,7 @@ class EmployeeServiceTest {
 
 
     @Test
-    void given_employee_data_when_manager_then_save() throws Exception {
+    void given_employee_data_when_manager_then_save() {
         //        given
         EmployeeEntity req = EmployeeEntity.builder().name("name N").email("name@gmail.com").teamName("team1").gender("M").empType("F").role("Manager").build();
 
@@ -219,7 +212,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void given_employee_data_when_manager_then_create_team() throws Exception {
+    void given_employee_data_when_manager_then_create_team() {
         //        given
         EmployeeEntity req = EmployeeEntity.builder().name("harish H").email("name@gmail.com").teamName("team1").gender("M").empType("F").role("Manager").build();
 
@@ -260,7 +253,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void given_employee_data_when_no_role_matches_exception() throws Exception {
+    void given_employee_data_when_no_role_matches_exception() {
         //given
         EmployeeEntity req = EmployeeEntity.builder().name("name N").email("name@gmail.com").teamName("team1").gender("M").empType("F").role("engineer").managerEmpId("man1").build();
 
@@ -353,7 +346,7 @@ class EmployeeServiceTest {
 
 
     @Test
-    void shall_get_employee_no_data_exception() throws JsonProcessingException {
+    void shall_get_employee_no_data_exception() {
         //given
         Employee emp = new Employee();
         emp.setEmpId("we123");
@@ -580,7 +573,6 @@ class EmployeeServiceTest {
         //given
         String empId = "we123";
         String address = "{\"no\":1,\"street\":\"om shakti nagar\",\"pinCode\":603301,\"country\":\"USA\"}";
-        String bankDetails = "{\"accountNo\":123567,\"ifscCode\":\"IDIB0972\"}";
         EmployeeEntity request = EmployeeEntity.builder().name("hari").empType("f").gender("M").teamId(1L).email("Rhaenyra@gmail.com").role("software_engineer").build();
         Team team = Team.builder().id(1L).name("team1").teamMembers(List.of("Rhaenyra")).teamCount(1).managerEmpId("MA012").build();
 
@@ -721,17 +713,14 @@ class EmployeeServiceTest {
     @Test
     void shall_update_employee_status_invalid() {
 
-        String address = "{\"no\":1,\"street\":\"om shakti nagar\",\"pinCode\":603301,\"country\":\"USA\"}";
-        Team team = Team.builder().id(1L).name("team1").teamMembers(List.of("df123")).teamCount(1).managerEmpId("MA012").build();
-
         String empId = "we123";
         String status = "remove";
         when(statusConfiguration.getStatusValues()).thenReturn(List.of("remove", "delete"));
-        when(empRepo.findByEmpId(empId)).thenThrow(new EmployeeExceptions("Employee not found EmpId: "+empId));
+        when(empRepo.findByEmpId(empId)).thenThrow(new EmployeeExceptions("Employee not found EmpId: " + empId));
         EmployeeExceptions exceptions = assertThrows(EmployeeExceptions.class, () -> service.updateStatus(empId, status));
         assertEquals(exceptions.getMessage(), "Employee not found EmpId: " + empId);
-        verify(empRepo,times(1)).findByEmpId(empId);
-        verify(teamRepo,times(0)).findById(1L);
+        verify(empRepo, times(1)).findByEmpId(empId);
+        verify(teamRepo, times(0)).findById(1L);
     }
 
 }

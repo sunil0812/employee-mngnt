@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,15 +77,15 @@ public class EmployeeControllerTest {
         Mockito.when(service.getAllEmpResponse()).thenReturn(List.of(response));
         ResponseEntity<List<Employee>> empResponse = controller.getAllEmployee();
         Assertions.assertEquals(HttpStatus.OK, empResponse.getStatusCode());
-        Assertions.assertEquals(empResponse.getBody().get(0).getName(), response.getName());
+        Assertions.assertEquals(Objects.requireNonNull(empResponse.getBody()).get(0).getName(), response.getName());
     }
 
     @Test
     void shall_test_update_emp() {
         EmployeeEntity request = EmployeeEntity.builder().name("jhon").role("software_engineer").email("jhon123@gmail.com").gender("M").empType("F").phone("1234567890").build();
         UpdateResponse response = UpdateResponse.builder().status("updated").message("employee updated successfully").build();
-        Mockito.when(service.updateDetails("we123",request)).thenReturn(response);
-        ResponseEntity<UpdateResponse> empResponse = controller.updateEmployee("we123",request);
+        Mockito.when(service.updateDetails("we123", request)).thenReturn(response);
+        ResponseEntity<UpdateResponse> empResponse = controller.updateEmployee("we123", request);
         Assertions.assertEquals(HttpStatus.OK, empResponse.getStatusCode());
         Assertions.assertEquals(response.getMessage(), Objects.requireNonNull(empResponse.getBody()).getMessage());
     }
@@ -94,8 +93,8 @@ public class EmployeeControllerTest {
     @Test
     void shall_test_update_emp_status() {
 
-        Mockito.when(service.updateStatus("we123","remove")).thenReturn("removed");
-        ResponseEntity<String> empResponse = controller.updateEmployeeStatus("we123","remove");
+        Mockito.when(service.updateStatus("we123", "remove")).thenReturn("removed");
+        ResponseEntity<String> empResponse = controller.updateEmployeeStatus("we123", "remove");
         Assertions.assertEquals(HttpStatus.OK, empResponse.getStatusCode());
         Assertions.assertEquals("removed", Objects.requireNonNull(empResponse.getBody()));
     }

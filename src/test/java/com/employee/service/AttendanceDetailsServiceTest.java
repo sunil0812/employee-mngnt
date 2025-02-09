@@ -12,21 +12,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertThrows;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -58,9 +54,9 @@ class AttendanceDetailsServiceTest {
         String res = service.insertAttendance(request);
 //    then
         Assertions.assertEquals("Employee Attendance Added", res);
-        verify(repo,times(1)).findByEmpId("we123");
-        verify(teamRepo,times(1)).findById(1L);
-        verify(empRepo,times(1)).findByEmpId("we123");
+        verify(repo, times(1)).findByEmpId("we123");
+        verify(teamRepo, times(1)).findById(1L);
+        verify(empRepo, times(1)).findByEmpId("we123");
     }
 
     @Test
@@ -77,9 +73,9 @@ class AttendanceDetailsServiceTest {
         EmployeeExceptions res = assertThrows(EmployeeExceptions.class, () -> service.insertAttendance(request));
 //    then
         Assertions.assertEquals("No employee found", res.getMessage());
-        verify(repo,times(1)).findByEmpId("we123");
-        verify(teamRepo,times(0)).findById(1L);
-        verify(empRepo,times(0)).findByEmpId("we123");
+        verify(repo, times(1)).findByEmpId("we123");
+        verify(teamRepo, times(0)).findById(1L);
+        verify(empRepo, times(0)).findByEmpId("we123");
     }
 
     @Test
@@ -95,10 +91,10 @@ class AttendanceDetailsServiceTest {
         EmployeeExceptions res = assertThrows(EmployeeExceptions.class, () -> service.insertAttendance(request));
         //    then
         Assertions.assertTrue(res.getMessage().contains("Should Match with [WFH, WFO, OOO]"));
-        verifyNoInteractions(repo,teamRepo,empRepo);
-        verify(repo,times(0)).findByEmpId("we123");
-        verify(teamRepo,times(0)).findById(1L);
-        verify(empRepo,times(0)).findByEmpId("we123");
+        verifyNoInteractions(repo, teamRepo, empRepo);
+        verify(repo, times(0)).findByEmpId("we123");
+        verify(teamRepo, times(0)).findById(1L);
+        verify(empRepo, times(0)).findByEmpId("we123");
     }
 
     @Test
@@ -116,6 +112,6 @@ class AttendanceDetailsServiceTest {
         String res = service.insertAttendance(request);
 //    then
         Assertions.assertEquals("Employee Attendance Updated", res);
-        verify(repo,times(1)).findByEmpId("we123");
+        verify(repo, times(1)).findByEmpId("we123");
     }
 }

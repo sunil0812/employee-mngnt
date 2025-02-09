@@ -4,7 +4,6 @@ import com.employee.entity.dto.TeamResponseDto;
 import com.employee.entity.request.TeamRequest;
 import com.employee.entity.response.TeamData;
 import com.employee.exception.EmployeeExceptions;
-import com.employee.model.Employee;
 import com.employee.model.Team;
 import com.employee.repository.TeamRepo;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -96,10 +94,10 @@ public class TeamServiceTest {
 
         when(repo.findAll()).thenReturn(List.of(team));
 
-        List<TeamData> teamData =service.getAllTeamName();
+        List<TeamData> teamData = service.getAllTeamName();
 
-        assertEquals(teamData.get(0).getManagerId(),team.getManagerEmpId());
-        verify(repo,times(1)).findAll();
+        assertEquals(teamData.get(0).getManagerId(), team.getManagerEmpId());
+        verify(repo, times(1)).findAll();
     }
 
 
@@ -108,10 +106,10 @@ public class TeamServiceTest {
 
         when(repo.findAll()).thenReturn(List.of());
 
-        List<TeamData> teamData =service.getAllTeamName();
+        List<TeamData> teamData = service.getAllTeamName();
 
         assertEquals(0, teamData.size());
-        verify(repo,times(1)).findAll();
+        verify(repo, times(1)).findAll();
     }
 
 
@@ -121,10 +119,10 @@ public class TeamServiceTest {
 
         when(repo.findAll()).thenReturn(List.of(team));
 
-        List<Team> teamData =service.getAllTeam();
+        List<Team> teamData = service.getAllTeam();
 
         assertEquals(1, teamData.size());
-        verify(repo,times(1)).findAll();
+        verify(repo, times(1)).findAll();
     }
 
 
@@ -132,10 +130,10 @@ public class TeamServiceTest {
     void shall_get_all_team_details_null() {
         when(repo.findAll()).thenReturn(List.of());
 
-        List<Team> teamData =service.getAllTeam();
+        List<Team> teamData = service.getAllTeam();
 
         assertEquals(0, teamData.size());
-        verify(repo,times(1)).findAll();
+        verify(repo, times(1)).findAll();
     }
 
 }
