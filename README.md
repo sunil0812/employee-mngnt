@@ -1,3 +1,3 @@
-Helps store employee data, so that later admin can see employee details
+Store Employee, Team and Attendance details, then this data will be available for admin.
 
 
