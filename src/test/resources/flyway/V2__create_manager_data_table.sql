@@ -25,3 +25,17 @@ CREATE TABLE employee_message.manager_data
 
 -- Link the sequence to the id column (if not already done by default)
 ALTER SEQUENCE employee_message.manager_data_id_seq OWNED BY employee_message.manager_data.id;
+
+INSERT INTO employee_message.manager_data (
+    id, name, team_name, emp_id, created_at, updated_at, deleted, is_active
+) VALUES (
+    5,
+    'pati k',
+    'team 2',
+    'PK0',
+    NOW(),  -- Use current timestamp if created_at is missing
+    NOW(),  -- Use current timestamp if updated_at is missing
+    false,
+    true
+);
+

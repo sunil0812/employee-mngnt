@@ -27,12 +27,13 @@ public class EmployeeResponseDto {
     private String managerName;
 
 
-    public EmployeeResponseDto(String name, String empId, String role, String email, String gender, String phone, String teamName, String address, String bankDetails, String managerEmpId, String managerName) {
+    public EmployeeResponseDto(String name, String empId, String role, String email, String gender, String dob, String phone, String teamName, String address, String bankDetails, String managerEmpId, String managerName) {
         this.name = name;
         this.empId = empId;
         this.role = role;
         this.email = email;
         this.gender = gender;
+        this.dob = dob;
         this.phone = phone;
         this.teamName = teamName;
         this.address = address;

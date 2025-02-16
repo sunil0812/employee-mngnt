@@ -1,10 +1,13 @@
 package com.employee.bdd;
 
 import com.employee.entity.request.EmployeeEntity;
+import com.employee.entity.response.BaseEmployeeResponse;
+import com.employee.entity.response.ManagerResponse;
 import com.employee.entity.response.TeamData;
 import com.employee.model.Employee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
@@ -13,19 +16,23 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.zonky.test.db.flyway.FlywayWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -95,10 +102,68 @@ public class EmployeeSteps extends BaseSteps {
         }
     }
 
+    @Given("check id {string} already presented in database")
+    public void checkInDbById(String empId) throws SQLException {
+        String query = "select * from employee_message.employees_data where emp_id='" + empId + "'";
+        int rowCount = 0;
+        try (ResultSet resultSet = executeQuery(query)) {
+            while (resultSet.next()) {
+                rowCount++;
+            }
+        }
+        assertEquals(1, rowCount);
+    }
+
+    @When("get details for employee id {string}")
+    public void getEmployeeDetails(String empId) {
+
+        RestAssured.baseURI = "http://localhost:8080";
+        response = RestAssured.given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .when().get("emp/getEmployee/{empId}", empId)
+                .then()
+                .log().all();
+    }
+
+    @Then("validate the id {string} details with {string} for role {string}")
+    public void validateResponse(String empId, String teamName, String role) throws SQLException, JsonProcessingException {
+        String value = response.extract().body().asPrettyString();
+        BaseEmployeeResponse actualResponse = mapper.readValue(value, BaseEmployeeResponse.class);
+        System.out.println(" response" + actualResponse);
+        assertEquals(200, response.extract().statusCode());
+        String query = "select * from employee_message.employees_data where emp_id='" + empId + "'";
+        int rowCount = 0;
+        try (ResultSet resultSet = executeQuery(query)) {
+            while (resultSet.next()) {
+                rowCount++;
+                String id = resultSet.getString("emp_id");
+                String actualRole = resultSet.getString("role");
+                assertEquals(role.toUpperCase(), actualRole);
+                assertEquals(empId, id);
+                if (actualRole.equals("MANAGER")) {
+                    assertNull(actualResponse.getEmployeeResponse());
+                    assertNotNull(actualResponse.getManagerResponse().getTeamData());
+                    assertEquals(actualResponse.getManagerResponse().getTeamData().getName(), teamName);
+                } else {
+                    assertNull(actualResponse.getManagerResponse());
+                    assertNotNull(actualResponse.getEmployeeResponse().getManager());
+                    assertEquals(actualResponse.getEmployeeResponse().getTeamName(), teamName);
+                }
+
+            }
+        }
+        assertEquals(1, rowCount);
+    }
+
     private ResultSet executeQuery(String query) throws SQLException {
         Connection connection = dataSource.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         return preparedStatement.executeQuery();
     }
 
+    public String readJsonFile(String fileName) throws IOException {
+        ClassPathResource resource = new ClassPathResource(fileName);
+        return new String(Files.readAllBytes(resource.getFile().toPath()));
+    }
 }
