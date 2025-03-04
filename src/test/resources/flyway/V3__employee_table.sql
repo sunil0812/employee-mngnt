@@ -80,6 +80,27 @@ INSERT INTO employee_message.employees_data (
     false
 );
 
+INSERT INTO employee_message.employees_data (
+    emp_id, name, role, email, phone, gender, dob, emp_type,
+    bank_details, address, created_at, updated_at, team_id, is_active, deleted
+) VALUES (
+    'CK0',
+    'candra k',
+    'SOFTWARE_ENGINEER',
+    'can234@gmail.com',
+    '+91 8631562893',
+    'M',
+    '2024-12-02',  -- YYYY-MM-DD format
+    'F',
+    '{"accountNo":"1234567810","ifscCode":"XYZB0001234"}',
+    '{"no":"1","street":"123 Main St","pinCode":"62704","country":"USA"}',
+    '2025-02-16 17:37:59',
+    '2025-02-16 17:37:59',
+    1,
+    true,
+    false
+);
+
 
 
 

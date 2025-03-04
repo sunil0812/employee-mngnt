@@ -385,12 +385,13 @@ public class EmployeeService {
         Employee emp = repo.findByEmpId(empId).orElseThrow(() -> new EmployeeExceptions("No result found for this id :: " + empId));
 
         return EmployeeEntity.builder().name(emp.getName())
-                .role(emp.getRole())
+                .role(emp.getRole().toLowerCase())
                 .email(emp.getEmail())
                 .phone(emp.getPhone())
                 .gender(emp.getGender())
                 .dob(emp.getDob())
                 .empType(emp.getEmpType())
+                .teamName(emp.getTeamId() == null ? null : emp.getTeamId().getName())
                 .teamId(emp.getTeamId() == null ? null : emp.getTeamId().getId())
                 .address(mapper.readValue(emp.getAddress(), Address.class))
                 .bankDetails(mapper.readValue(emp.getBankDetails(), BankDetails.class))

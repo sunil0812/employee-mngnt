@@ -35,12 +35,12 @@ ALTER SEQUENCE employee_message.team_data_id_seq OWNED BY employee_message.team_
 
 
 INSERT INTO employee_message.team_data(
-	name, manager_emp_id, team_count, team_members, created_at, updated_at, deleted, is_active)
-	VALUES ( 'team 1', 'PC0', 0, '{}', '2024-12-28 13:36:48.662867+05:30', '2025-01-04 20:50:33.993502+05:30', false, true);
+	id, name, manager_emp_id, team_count, team_members, created_at, updated_at, deleted, is_active)
+	VALUES ( 1, 'team 1', 'PC0', 0, '{CK0}', '2024-12-28 13:36:48.662867+05:30', '2025-01-04 20:50:33.993502+05:30', false, true);
 
 	INSERT INTO employee_message.team_data (
-        name, manager_emp_id, team_count, team_members, created_at, updated_at, deleted, is_active
-    ) VALUES (
+        id, name, manager_emp_id, team_count, team_members, created_at, updated_at, deleted, is_active
+    ) VALUES (2,
         'team 2',
         'PK0',
         0,
