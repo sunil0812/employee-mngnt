@@ -29,7 +29,12 @@ Feature: Employee Api
 
   Scenario: Update Employee Details after joining new team
     Given id 'JK0' should available in database
-    When update details for employee id 'JK0' with new team
+    When update details for employee id 'JK0' with team
     Then validate the id 'JK0' details with email as 'john2742@gmail.com' and team
+
+  Scenario: Update Employee Details Skipped
+    Given id 'CK0' should available in database
+    When update details for employee id 'CK0' with team
+    Then validate the update details as 'Skipped'
 
 

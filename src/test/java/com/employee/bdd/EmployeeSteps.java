@@ -214,7 +214,7 @@ public class EmployeeSteps extends BaseSteps {
         assertEquals(1, rowCount);
     }
 
-    @When("update details for employee id {string} with new team")
+    @When("update details for employee id {string} with team")
     public void updateEmployeeDetails(String empId) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         EmployeeEntity request = mapper.readValue(new File("src/test/resources/stubs/update/" + empId.toLowerCase() + "_request.json"), EmployeeEntity.class);
@@ -250,17 +250,12 @@ public class EmployeeSteps extends BaseSteps {
         assertEquals(1, rowCount);
     }
 
-    private void checkZeroTeamMembers(int teamId) throws SQLException {
-        String query = "select * from employee_message.team_data where id='" + teamId + "'";
-        int rowCount = 0;
-        try (ResultSet resultSet = executeQuery(query)) {
-            while (resultSet.next()) {
-                Array value = resultSet.getArray("team_members");
-                String[] members = (String[]) value.getArray();
-                assertTrue(members.length == 0);
-                rowCount++;
-            }
-        }
+    @Then("validate the update details as {string}")
+    public void validateUpdateEmpResponseSkipped(String status) throws JsonProcessingException {
+        String value = response.extract().body().asPrettyString();
+        UpdateResponse actualResponse = mapper.readValue(value, UpdateResponse.class);
+        assertEquals(actualResponse.getStatus(),status);
+        assertEquals(200, response.extract().statusCode());
     }
 
     private ResultSet executeQuery(String query) throws SQLException {
