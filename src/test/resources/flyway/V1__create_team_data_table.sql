@@ -44,7 +44,7 @@ INSERT INTO employee_message.team_data(
         'team 2',
         'PK0',
         0,
-        '{}',  -- Assuming team_members is of type JSONB
+        '{JK0}',  -- Assuming team_members is of type JSONB
         '2025-02-16 17:37:59',
         '2025-02-16 17:37:59',
         false,

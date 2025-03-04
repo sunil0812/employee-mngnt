@@ -13,7 +13,7 @@ Feature: Employee Api
     Then  Store the employee details in DB
 
   Scenario: Get Employee Details Role MANAGER
-    Given check id 'PK0' already presented in database
+    Given id 'PK0' should available in database
     When get details for employee id 'PK0'
     Then validate the id 'PK0' details with 'team 2' for role 'Manager'
 
@@ -21,5 +21,15 @@ Feature: Employee Api
     Given check id 'JK0' already presented in database
     When get details for employee id 'JK0'
     Then validate the id 'JK0' details with 'team 2' for role 'Software_Engineer'
+
+  Scenario: Remove Employee from a team and later update it
+    Given check id 'JK0' already presented in database
+    When employee id 'JK0' removed from a team with status 'remove'
+    Then validate the id 'JK0' details with removed team
+
+  Scenario: Update Employee Details after joining new team
+    Given id 'JK0' should available in database
+    When update details for employee id 'JK0' with new team
+    Then validate the id 'JK0' details with email as 'john2742@gmail.com' and team
 
 

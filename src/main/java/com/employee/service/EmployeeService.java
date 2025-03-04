@@ -71,7 +71,6 @@ public class EmployeeService {
         validatePhoneEmail(emp);
         employee.setEmpId(getEmpId(emp.getName()));
         String empId = employee.getEmpId();
-        System.out.println("manager ID --> "+empId);
         employee.setName(emp.getName());
         employee.setEmail(emp.getEmail());
         employee.setEmpType(emp.getEmpType());
@@ -333,26 +332,16 @@ public class EmployeeService {
     private UpdateResponse updateEmployeeValue(Team teamValue, EmployeeEntity existingValue, EmployeeEntity currentValue, String empId) {
         Employee employee = new Employee();
 
-        Team existingTeamValue = teamRepo.findById(existingValue.getTeamId()).orElseThrow(() -> new EmployeeExceptions("Team data not found for given ID: " + currentValue.getTeamId()));
-        employee.setTeamId(existingTeamValue);
-        if (!Objects.equals(existingValue.getTeamId(), teamValue.getId())) {
-
-            List<String> members = new ArrayList<>(existingTeamValue.getTeamMembers());
-//                REMOVING MEMBER FROM TEAM
-            members.removeIf(i -> i != null && i.equalsIgnoreCase(empId));
-            existingTeamValue.setTeamMembers(members);
-            existingTeamValue.setTeamCount(members.size());
-            teamRepo.save(existingTeamValue);
-
-//                ADDING NEW MEMBER IN TEAM
-            List<String> newMembers = new ArrayList<>(teamValue.getTeamMembers());
-            newMembers.add(empId);
-            teamValue.setTeamMembers(newMembers);
-            teamValue.setTeamCount(newMembers.size());
-            teamRepo.save(teamValue);
-
-            employee.setTeamId(teamValue);
+//        Team existingTeamValue = teamRepo.findById(existingValue.getTeamId()).orElse(null);
+        if (existingValue.getTeamId() != null){
+            log.info("Employee already in a team id - {}, no team change", existingValue.getTeamId());
+            return UpdateResponse.builder().status("Skipped").message("Employee already in a team id - " + existingValue.getTeamId()).build();
         }
+        ArrayList<String> members = new ArrayList<>(teamValue.getTeamMembers());
+        members.add(empId);
+        teamValue.setTeamMembers(members);
+        teamValue.setTeamCount(members.size());
+        employee.setTeamId(teamValue);
         employee.setName(currentValue.getName());
         employee.setEmail(currentValue.getEmail());
         employee.setEmpType(currentValue.getEmpType());
@@ -363,6 +352,7 @@ public class EmployeeService {
         employee.setAddress(convertToJson(currentValue.getAddress()));
         employee.setBankDetails(convertToJson(currentValue.getBankDetails()));
         employee.setEmpId(empId);
+        teamRepo.save(teamValue);
         repo.save(employee);
         return UpdateResponse.builder().status("Updated").message("Employee details updated for EmpID: " + empId).build();
     }
@@ -401,7 +391,7 @@ public class EmployeeService {
                 .gender(emp.getGender())
                 .dob(emp.getDob())
                 .empType(emp.getEmpType())
-                .teamId(emp.getTeamId().getId())
+                .teamId(emp.getTeamId() == null ? null : emp.getTeamId().getId())
                 .address(mapper.readValue(emp.getAddress(), Address.class))
                 .bankDetails(mapper.readValue(emp.getBankDetails(), BankDetails.class))
                 .build();
