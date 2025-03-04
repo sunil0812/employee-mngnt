@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,11 +109,29 @@ class AttendanceDetailsServiceTest {
         AttendanceStatusRequest request = AttendanceStatusRequest.builder().employeeId("we123").status("wfo").build();
         //    when
 
-        when(repo.findByEmpId(request.getEmployeeId())).thenReturn(Optional.of(AttendanceDetails.builder().empId("we123").mEmpId("we124").ooo(0).wfh(1).wfo(0).build()));
+        when(repo.findByEmpId(request.getEmployeeId())).thenReturn(Optional.of(AttendanceDetails.builder().empId("we123").mEmpId("we124").ooo(0).wfh(1).wfo(0).updatedAt(Timestamp.valueOf("2025-03-03 15:15:40.0")).build()));
 
         String res = service.insertAttendance(request);
 //    then
         Assertions.assertEquals("Employee Attendance Updated", res);
+        verify(repo, times(1)).findByEmpId("we123");
+    }
+
+    @Test
+    void shall_test_update_employee_attendance_throw_exception() {
+        //    given
+        Team team = Team.builder().id(1L).name("team 1").teamMembers(List.of("we123")).teamCount(1).build();
+        Employee employee = new Employee();
+        employee.setActive(true);
+        employee.setTeamId(team);
+        AttendanceStatusRequest request = AttendanceStatusRequest.builder().employeeId("we123").status("wfo").build();
+        //    when
+
+        when(repo.findByEmpId(request.getEmployeeId())).thenReturn(Optional.of(AttendanceDetails.builder().empId("we123").mEmpId("we124").ooo(0).wfh(1).wfo(0).updatedAt(Timestamp.valueOf(LocalDateTime.now())).build()));
+
+        EmployeeExceptions res = assertThrows(EmployeeExceptions.class, () -> service.insertAttendance(request));
+//    then
+        Assertions.assertEquals("Attendance Already Updated", res.getMessage());
         verify(repo, times(1)).findByEmpId("we123");
     }
 }
