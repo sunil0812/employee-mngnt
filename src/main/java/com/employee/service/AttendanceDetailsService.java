@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,11 +36,23 @@ public class AttendanceDetailsService {
     public String insertAttendance(AttendanceStatusRequest details) {
         validateStatus(details.getStatus());
         Optional<AttendanceDetails> attendanceDetail = repo.findByEmpId(details.getEmployeeId());
+        attendanceDetail.ifPresent(this::validateAttendance);
         return attendanceDetail.map(attendanceDetails -> updateAttendanceEmployee(attendanceDetails, details.getStatus())).orElseGet(() -> insertEmployeeAttendance(details));
     }
 
+    private void validateAttendance(AttendanceDetails attendanceDetails) {
+        Timestamp timestamp = Timestamp.valueOf(attendanceDetails.getUpdatedAt().toLocalDateTime());
+        LocalDate latestDate = timestamp.toLocalDateTime().toLocalDate();
+        Timestamp currentTimeStamp = Timestamp.valueOf(LocalDateTime.now());
+        LocalDate currentDate = currentTimeStamp.toLocalDateTime().toLocalDate();
+        if (latestDate.equals(currentDate) && (attendanceDetails.getUpdatedAt() != null && attendanceDetails.getUpdatedAt().before(Timestamp.valueOf(LocalDateTime.now())))) {
+            log.error("Attendance Already Registered for Employee - [{}]", attendanceDetails.getEmpId());
+            throw new EmployeeExceptions("Attendance Already Updated");
+        }
+    }
+
     private String updateAttendanceEmployee(AttendanceDetails attendanceDetail, String status) {
-       AttendanceDetails details = addAttendanceStatus(attendanceDetail, status);
+        AttendanceDetails details = addAttendanceStatus(attendanceDetail, status);
         repo.save(details);
         return "Employee Attendance Updated";
     }
@@ -63,18 +78,18 @@ public class AttendanceDetailsService {
         } else if (Objects.equals(AttendanceDetailsConstant.WFH.name(), status.toUpperCase())) {
             int wfh = attendance.getWfh();
             attendance.setWfh(wfh + 1);
-        } else if(Objects.equals(AttendanceDetailsConstant.OOO.name(), status.toUpperCase())){
+        } else if (Objects.equals(AttendanceDetailsConstant.OOO.name(), status.toUpperCase())) {
             int ooo = attendance.getOoo();
             attendance.setOoo(ooo + 1);
         }
         return attendance;
     }
 
-    private String insertEmployeeAttendance(AttendanceStatusRequest request){
+    private String insertEmployeeAttendance(AttendanceStatusRequest request) {
         log.info("Inserting attendance new data");
         AttendanceDetails attendance = validateEmployee(request.getEmployeeId());
         AttendanceDetails attendanceDetails = addAttendanceStatus(attendance, request.getStatus());
-          repo.save(attendanceDetails);
-          return "Employee Attendance Added";
+        repo.save(attendanceDetails);
+        return "Employee Attendance Added";
     }
 }
