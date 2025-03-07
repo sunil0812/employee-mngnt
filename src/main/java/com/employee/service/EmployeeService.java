@@ -263,6 +263,7 @@ public class EmployeeService {
         }
     }
 
+    @Transactional
     public UpdateResponse updateDetails(String empId, EmployeeEntity currentValue) {
         try {
             EmployeeEntity existingValue = getExistingEmpValue(empId);
@@ -332,15 +333,16 @@ public class EmployeeService {
     private UpdateResponse updateEmployeeValue(Team teamValue, EmployeeEntity existingValue, EmployeeEntity currentValue, String empId) {
         Employee employee = new Employee();
 
-//        Team existingTeamValue = teamRepo.findById(existingValue.getTeamId()).orElse(null);
-        if (existingValue.getTeamId() != null){
-            log.info("Employee already in a team id - {}, no team change", existingValue.getTeamId());
-            return UpdateResponse.builder().status("Skipped").message("Employee already in a team id - " + existingValue.getTeamId()).build();
+        if (existingValue.getTeamId() == null) {
+            ArrayList<String> members = new ArrayList<>(teamValue.getTeamMembers());
+            members.add(empId);
+
+            teamValue.setTeamMembers(members);
+            teamValue.setTeamCount(members.size());
+            teamRepo.save(teamValue);
+            log.info("Employee is added to a team - {}", teamValue.getName());
         }
-        ArrayList<String> members = new ArrayList<>(teamValue.getTeamMembers());
-        members.add(empId);
-        teamValue.setTeamMembers(members);
-        teamValue.setTeamCount(members.size());
+
         employee.setTeamId(teamValue);
         employee.setName(currentValue.getName());
         employee.setEmail(currentValue.getEmail());
@@ -352,7 +354,6 @@ public class EmployeeService {
         employee.setAddress(convertToJson(currentValue.getAddress()));
         employee.setBankDetails(convertToJson(currentValue.getBankDetails()));
         employee.setEmpId(empId);
-        teamRepo.save(teamValue);
         repo.save(employee);
         return UpdateResponse.builder().status("Updated").message("Employee details updated for EmpID: " + empId).build();
     }
