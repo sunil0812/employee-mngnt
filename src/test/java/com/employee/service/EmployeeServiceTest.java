@@ -420,7 +420,7 @@ class EmployeeServiceTest {
 
         when(empRepo.findByEmpId(empId)).thenReturn(Optional.of(emp));
         when(teamRepo.findById(request.getTeamId())).thenReturn(Optional.of(team1));
-        when(teamRepo.findById(emp.getTeamId().getId())).thenReturn(Optional.of(team));
+
         //when
         UpdateResponse response = service.updateDetails("we123", request);
         //then
@@ -540,7 +540,7 @@ class EmployeeServiceTest {
         //given
         String empId = "we123";
 
-        EmployeeEntity request = EmployeeEntity.builder().name("hari").empType("f").gender("M").teamId(1L).email("Rhaenyra@gmail.com").role("software_engineer").build();
+        EmployeeEntity request = EmployeeEntity.builder().name("hari").empType("f").gender("M").teamId(1L).email("Rhaenyra@gmail.com").role("software_engineer").teamName("team1").build();
         Team team = Team.builder().id(1L).name("team1").teamMembers(List.of("Rhaenyra")).teamCount(1).managerEmpId("MA012").build();
 
         Employee emp = new Employee();
