@@ -30,8 +30,8 @@ class TeamControllerTest {
     void shall_test_save_team_data() {
         TeamRequest request = TeamRequest.builder().name("team1").managerEmpId("we123").build();
         Team team = Team.builder().teamCount(0).teamMembers(List.of()).managerEmpId("we123").name("team1").build();
-        Mockito.when(service.saveTeamDetails(request)).thenReturn(team);
-        ResponseEntity<Team> response = controller.saveTeam(request);
+        Mockito.when(service.saveTeamDetails("team1")).thenReturn(team);
+        ResponseEntity<Team> response = controller.saveTeam("team1");
         Assertions.assertEquals("team1", Objects.requireNonNull(response.getBody()).getName());
     }
 

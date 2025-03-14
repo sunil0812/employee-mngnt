@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TeamServiceTest {
+class TeamServiceTest {
 
     @InjectMocks
     private TeamService service;
@@ -31,32 +31,29 @@ public class TeamServiceTest {
 
     @Test
     void shall_save_team_details() {
-        TeamRequest request = TeamRequest.builder().name("team1").teamCount(0).teamMembers(List.of()).build();
-        Team team = Team.builder().name("team1").teamCount(0).teamMembers(List.of()).build();
+        Team team = Team.builder().name("team 1").teamCount(0).teamMembers(List.of()).build();
 
         when(repo.save(team)).thenReturn(team);
-        service.saveTeamDetails(request);
+        service.saveTeamDetails("team 1");
 
         verify(repo, times(1)).save(team);
     }
 
     @Test
     void shall_save_team_details_throws_exception() {
-        TeamRequest request = TeamRequest.builder().name("").teamCount(0).teamMembers(List.of()).build();
-        Team team = Team.builder().name("team1").teamCount(0).teamMembers(List.of()).build();
-        EmployeeExceptions exceptions = assertThrows(EmployeeExceptions.class, () -> service.saveTeamDetails(request));
+        Team team = Team.builder().name("").teamCount(0).teamMembers(List.of()).build();
+        EmployeeExceptions exceptions = assertThrows(EmployeeExceptions.class, () -> service.saveTeamDetails(""));
 
-        assertEquals("Team Name not provided", exceptions.getMessage());
+        assertEquals("Team Name Invalid", exceptions.getMessage());
         verify(repo, times(0)).save(team);
     }
 
     @Test
     void shall_save_same_team_details_throws_exception() {
-        TeamRequest request = TeamRequest.builder().name("team1").teamCount(0).teamMembers(List.of()).build();
         Team team = Team.builder().name("team1").teamCount(0).teamMembers(List.of()).build();
 
         when(repo.findByName("team1")).thenReturn(team);
-        EmployeeExceptions exceptions = assertThrows(EmployeeExceptions.class, () -> service.saveTeamDetails(request));
+        EmployeeExceptions exceptions = assertThrows(EmployeeExceptions.class, () -> service.saveTeamDetails("team1"));
 
         assertEquals("Team Already Created", exceptions.getMessage());
         verify(repo, times(0)).save(team);
