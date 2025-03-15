@@ -71,7 +71,6 @@ public class EmployeeService {
         validatePhoneEmail(emp);
         employee.setEmpId(getEmpId(emp.getName()));
         String empId = employee.getEmpId();
-        System.out.println("manager ID --> "+empId);
         employee.setName(emp.getName());
         employee.setEmail(emp.getEmail());
         employee.setEmpType(emp.getEmpType());
@@ -264,6 +263,7 @@ public class EmployeeService {
         }
     }
 
+    @Transactional
     public UpdateResponse updateDetails(String empId, EmployeeEntity currentValue) {
         try {
             EmployeeEntity existingValue = getExistingEmpValue(empId);
@@ -333,26 +333,17 @@ public class EmployeeService {
     private UpdateResponse updateEmployeeValue(Team teamValue, EmployeeEntity existingValue, EmployeeEntity currentValue, String empId) {
         Employee employee = new Employee();
 
-        Team existingTeamValue = teamRepo.findById(existingValue.getTeamId()).orElseThrow(() -> new EmployeeExceptions("Team data not found for given ID: " + currentValue.getTeamId()));
-        employee.setTeamId(existingTeamValue);
-        if (!Objects.equals(existingValue.getTeamId(), teamValue.getId())) {
+        if (existingValue.getTeamId() == null) {
+            ArrayList<String> members = new ArrayList<>(teamValue.getTeamMembers());
+            members.add(empId);
 
-            List<String> members = new ArrayList<>(existingTeamValue.getTeamMembers());
-//                REMOVING MEMBER FROM TEAM
-            members.removeIf(i -> i != null && i.equalsIgnoreCase(empId));
-            existingTeamValue.setTeamMembers(members);
-            existingTeamValue.setTeamCount(members.size());
-            teamRepo.save(existingTeamValue);
-
-//                ADDING NEW MEMBER IN TEAM
-            List<String> newMembers = new ArrayList<>(teamValue.getTeamMembers());
-            newMembers.add(empId);
-            teamValue.setTeamMembers(newMembers);
-            teamValue.setTeamCount(newMembers.size());
+            teamValue.setTeamMembers(members);
+            teamValue.setTeamCount(members.size());
             teamRepo.save(teamValue);
-
-            employee.setTeamId(teamValue);
+            log.info("Employee is added to a team - {}", teamValue.getName());
         }
+
+        employee.setTeamId(teamValue);
         employee.setName(currentValue.getName());
         employee.setEmail(currentValue.getEmail());
         employee.setEmpType(currentValue.getEmpType());
@@ -395,13 +386,14 @@ public class EmployeeService {
         Employee emp = repo.findByEmpId(empId).orElseThrow(() -> new EmployeeExceptions("No result found for this id :: " + empId));
 
         return EmployeeEntity.builder().name(emp.getName())
-                .role(emp.getRole())
+                .role(emp.getRole().toLowerCase())
                 .email(emp.getEmail())
                 .phone(emp.getPhone())
                 .gender(emp.getGender())
                 .dob(emp.getDob())
                 .empType(emp.getEmpType())
-                .teamId(emp.getTeamId().getId())
+                .teamName(emp.getTeamId() == null ? null : emp.getTeamId().getName())
+                .teamId(emp.getTeamId() == null ? null : emp.getTeamId().getId())
                 .address(mapper.readValue(emp.getAddress(), Address.class))
                 .bankDetails(mapper.readValue(emp.getBankDetails(), BankDetails.class))
                 .build();

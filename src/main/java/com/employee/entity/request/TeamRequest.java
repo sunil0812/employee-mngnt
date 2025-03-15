@@ -15,6 +15,4 @@ public class TeamRequest {
     private String managerEmpId;
     private int teamCount;
     private List<String> teamMembers;
-    private boolean active;
-    private boolean deleted;
 }

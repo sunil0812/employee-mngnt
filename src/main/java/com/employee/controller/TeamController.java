@@ -6,7 +6,9 @@ import com.employee.entity.response.TeamResponse;
 import com.employee.model.Team;
 import com.employee.service.EmployeeService;
 import com.employee.service.TeamService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +37,8 @@ public class TeamController {
         return ResponseEntity.ok(service.getAllTeam());
     }
 
-    @PostMapping("/saveTeam")
-    public ResponseEntity<Team> saveTeam(@RequestBody TeamRequest team) {
+    @PostMapping(value = "/saveTeam", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<Team> saveTeam(@RequestBody String team)  {
         return ResponseEntity.ok(service.saveTeamDetails(team));
     }
 

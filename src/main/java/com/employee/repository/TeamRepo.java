@@ -29,6 +29,6 @@ public interface TeamRepo extends JpaRepository<Team,Long> {
     @Query(value = "SELECT * FROM employee_message.team_data where manager_emp_id=:empId",nativeQuery = true)
     Team findByManagerEmpId(@Param("empId") String empId);
 
-    @Query(value = "SELECT * FROM employee_message.team_data where deleted=false",nativeQuery = true)
+    @Query(value = "SELECT * FROM employee_message.team_data where is_active=true AND deleted=false",nativeQuery = true)
     List<Team> findAll();
 }

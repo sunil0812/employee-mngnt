@@ -7,6 +7,8 @@ import com.employee.entity.response.TeamResponse;
 import com.employee.exception.EmployeeExceptions;
 import com.employee.model.Team;
 import com.employee.repository.TeamRepo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,27 +34,27 @@ public class TeamService {
         }
     }
 
-    public Team saveTeamDetails(TeamRequest team) {
-        Team team1 = repo.findByName(team.getName().toLowerCase());
-        if (team.getName().replace(" ","").isEmpty()){
-            throw new EmployeeExceptions("Team Name not provided");
-        }else if (team1 != null){
+    public Team saveTeamDetails(String team) {
+        Team team1 = repo.findByName(team.toLowerCase());
+        if (team.replace(" ", "").isEmpty()) {
+            throw new EmployeeExceptions("Team Name Invalid");
+        } else if (team1 != null) {
             throw new EmployeeExceptions("Team Already Created");
         }
         Team saveTeam = Team.builder()
-                .name(team.getName().toLowerCase())
+                .name(team.toLowerCase())
                 .managerEmpId(null)
                 .teamMembers(List.of())
                 .teamCount(0)
                 .build();
 
         repo.save(saveTeam);
-        log.info("New Team Added Name{} - Members{} - ManagerId{} ", team.getName(), team.getTeamMembers(), team.getManagerEmpId());
+        log.info("New Team Added Name {} - Members{} - ManagerId{} ", team, saveTeam.getTeamMembers(), saveTeam.getManagerEmpId());
         return saveTeam;
     }
 
     public List<TeamData> getAllTeamName() {
-        List<Team> teams  = repo.findAll();
+        List<Team> teams = repo.findAll();
         List<TeamData> list = new ArrayList<>();
         teams.forEach(teamData -> {
             TeamData data = TeamData.builder().name(teamData.getName()).managerId(teamData.getManagerEmpId()).build();
@@ -62,6 +64,6 @@ public class TeamService {
     }
 
     public List<Team> getAllTeam() {
-       return repo.findAll();
+        return repo.findAll();
     }
 }

@@ -15,7 +15,7 @@ public interface EmployeeRepo extends JpaRepository<Employee, String> {
     Optional<Employee> findByEmpId(@Param("empId") String empId);
 
 
-    @Query("SELECT new com.employee.entity.dto.EmployeeResponseDto(e.name, e.empId, e.role, e.email, e.gender, e.phone,e.dob,t.name, e.address,e.bankDetails,m.empId,m.name) FROM Employee e JOIN Team t ON t.id = CAST(e.teamId as integer) JOIN Manager m ON m.empId = t.managerEmpId WHERE e.empId = ?1 AND e.deleted = false")
+    @Query("SELECT new com.employee.entity.dto.EmployeeResponseDto(e.name, e.empId, e.role, e.email, e.gender, e.dob, e.phone,t.name, e.address,e.bankDetails,m.empId,m.name) FROM Employee e JOIN Team t ON t.id = CAST(e.teamId as integer) JOIN Manager m ON m.empId = t.managerEmpId WHERE e.empId = ?1 AND e.deleted = false")
     EmployeeResponseDto findEmployeeByEmpId(String empId);
 
     @Query(value = "SELECT * FROM employee_message.employees_data where deleted = false ", nativeQuery = true)

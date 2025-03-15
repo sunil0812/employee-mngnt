@@ -1,0 +1,21 @@
+{
+  "name": "candra k",
+  "role": "software_engineer",
+  "email": "can234@gmail.com",
+  "phone": "+91 8631562893",
+  "gender": "M",
+  "dob": "2024-12-02",
+  "empType": "F",
+  "teamName": "team 1",
+  "teamId": 1,
+  "bankDetails": {
+    "accountNo": "1234567810",
+    "ifscCode": "XYZB0001234"
+  },
+  "address": {
+    "no":"1",
+    "street": "123 Main St",
+    "pinCode": "62704",
+    "country": "USA"
+  }
+}
