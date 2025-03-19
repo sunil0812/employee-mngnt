@@ -7,9 +7,13 @@ import com.employee.model.Team;
 import com.employee.service.EmployeeService;
 import com.employee.service.TeamService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,4 +51,23 @@ public class TeamController {
         return ResponseEntity.ok(service.getAllTeamName());
     }
 
+    /*
+     Created just for Security Testing
+    * Later needs to remove
+    */
+    @GetMapping("/getData")
+    public String getData(HttpServletRequest request) {
+        return "hello world  "+ request.getSession().getId();
+    }
+
+    ArrayList<String > arrayList = new ArrayList<>(List.of("hello", "hey"));
+    @PostMapping("/save")
+    public List<String> save(@RequestBody String value){
+        arrayList.add(value);
+        return arrayList;
+    }
+    @GetMapping("/getStudent")
+    public String getStudent() {
+        return arrayList.toString();
+    }
 }
