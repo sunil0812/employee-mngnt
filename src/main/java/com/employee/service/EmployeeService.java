@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -51,6 +52,8 @@ public class EmployeeService {
 
     private final StatusConfiguration values;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
     public EmployeeService(StatusConfiguration values, EmployeeRepo repo, TeamRepo teamRepo, ManagerRepo managerRepo, ObjectMapper mapper, EmployeeNameTrackingRepo nameRepo) {
         this.values = values;
         this.nameRepo = nameRepo;
@@ -74,8 +77,9 @@ public class EmployeeService {
         employee.setName(emp.getName());
         employee.setEmail(emp.getEmail());
         employee.setEmpType(emp.getEmpType());
+        employee.setPassword(encoder.encode(employee.getEmpId()));
         employee.setPhone(emp.getPhone());
-        employee.setRole(validateRole(emp.getRole()));
+        employee.setRole(validateRole(emp.getRole()).toUpperCase());
         employee.setBankDetails(convertToJson(emp.getBankDetails()));
         employee.setGender(emp.getGender());
         employee.setAddress(convertToJson(emp.getAddress()));
@@ -121,11 +125,12 @@ public class EmployeeService {
             validatePhoneEmail(emp);
             Employee employee = new Employee();
             employee.setEmpId(getEmpId(emp.getName()));
+            employee.setPassword(encoder.encode(employee.getEmpId()));
             employee.setName(emp.getName());
             employee.setEmail(emp.getEmail());
             employee.setEmpType(emp.getEmpType());
             employee.setPhone(emp.getPhone());
-            employee.setRole(validateRole(emp.getRole()));
+            employee.setRole(validateRole(emp.getRole()).toUpperCase());
             employee.setBankDetails(convertToJson(emp.getBankDetails()));
             employee.setGender(emp.getGender());
             employee.setAddress(convertToJson(emp.getAddress()));

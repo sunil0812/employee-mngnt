@@ -42,6 +42,7 @@ public class Employee {
     private Team teamId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String password;
 
 
 
