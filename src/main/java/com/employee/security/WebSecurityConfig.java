@@ -23,35 +23,30 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-  @Autowired
-  private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
-    return security.csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(request -> request.requestMatchers("/team/**","/emp/**").hasAnyAuthority("MANAGER","SOFTWARE_ENGINEER"))
-        .httpBasic(Customizer.withDefaults())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .build();
-  }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
+        return security.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request ->
+                        request.requestMatchers("attendance/save","emp/getEmployee/**").hasAnyAuthority("SOFTWARE_ENGINEER","MANAGER")
+                                .requestMatchers("emp/login").permitAll()
+                                .requestMatchers("/dashboard/logIn","team/getTeam","emp/getEmployeeList/**").hasAuthority("MANAGER")
+                                .requestMatchers("/emp/**","team/**","/dashboard/**","attendance/**").hasAuthority("HR")
+                                .anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
+    }
 
-  @Bean
-  public AuthenticationProvider authenticationProvider(){
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-    authProvider.setUserDetailsService(userDetailsService);
-    return authProvider;
-  }
-
-
-//  @Bean
-//  public UserDetailsService userDetailsService(){
-//
-//    UserDetails user1 = User.withDefaultPasswordEncoder().username("name").password("paswd").roles("USER").build();
-//    UserDetails user2 = User.withDefaultPasswordEncoder().username("name1").password("paswd1").roles("ADMIN").build();
-//
-//    return new InMemoryUserDetailsManager(user1,user2);
-//  }
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        authProvider.setUserDetailsService(userDetailsService);
+        return authProvider;
+    }
 
 }

@@ -4,6 +4,7 @@ import com.employee.configuration.StatusConfiguration;
 import com.employee.constants.EmployeeConstants;
 import com.employee.entity.request.EmployeeEntity;
 import com.employee.entity.dto.EmployeeResponseDto;
+import com.employee.entity.request.LogInRequest;
 import com.employee.entity.response.BaseEmployeeResponse;
 import com.employee.entity.response.EmployeeResponse;
 import com.employee.entity.response.ManagerData;
@@ -404,12 +405,21 @@ public class EmployeeService {
                 .build();
     }
 
-    public List<Employee> getAllEmpResponse() {
+    public List<Employee> getAllEmpResponse(String empId) {
+       ArrayList<Employee> employeeList = new ArrayList<>();
+        Employee employee = repo.findByEmpId(empId).orElseThrow(() -> new EmployeeExceptions("USER NOT FOUND"));
+        if (employee.getRole().equals("MANAGER")){
+           Team team = teamRepo.findByManagerEmpId(empId);
+           team.getTeamMembers().forEach(a -> {
+                  Employee emp = repo.findByEmpId(a).orElseThrow(() -> new EmployeeExceptions("USER NOT FOUND: "+a));
+                 employeeList.add(emp);
+           });
+           return employeeList;
+        }
         List<Employee> emp = repo.findAll();
         if (emp == null || emp.isEmpty()) throw new EmployeeExceptions("No Data found");
 //        emp.stream().filter(employee -> employee.getUpdatedAt() != null && employee.getCreatedAt() != null).forEach(EmployeeService::formatTimestamp);
         return emp;
-
     }
 
     public static void formatTimestamp(Employee emp) {
@@ -424,4 +434,15 @@ public class EmployeeService {
 
     }
 
+    public String validateCredentials(LogInRequest request) {
+
+        Employee employee = repo.findByEmpId(request.getUserName()).orElseThrow(() -> new EmployeeExceptions("User Not Found: " + request.getUserName()));
+        boolean isPasswordMatch = encoder.matches(request.getPassword(),employee.getPassword());
+        if (!isPasswordMatch) {
+            return "Invalid Password";
+        } else if (employee.getEmpId().contains(request.getPassword())) {
+            return "Change password";
+        }
+        return "User credentials validated";
+    }
 }

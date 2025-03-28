@@ -25,6 +25,7 @@ public class MyUserDetailService implements UserDetailsService {
         if (!emp.isPresent()){
             throw new UsernameNotFoundException("EMPLOYEE NOT FOUND: "+username);
         }
+        System.out.println("USER FOUND --> "+new UserPrincipal(emp.get()).getAuthorities());
         return new UserPrincipal(emp.get());
     }
 }

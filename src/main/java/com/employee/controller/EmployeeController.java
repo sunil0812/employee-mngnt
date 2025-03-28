@@ -1,14 +1,14 @@
 package com.employee.controller;
 
 
-import com.employee.configuration.StatusConfiguration;
 import com.employee.entity.request.EmployeeEntity;
+import com.employee.entity.request.LogInRequest;
 import com.employee.entity.response.BaseEmployeeResponse;
 import com.employee.entity.response.UpdateResponse;
-import com.employee.exception.EmployeeExceptions;
 import com.employee.model.Employee;
 import com.employee.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,9 +45,9 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getEmployee")
-    public ResponseEntity<List<Employee>> getAllEmployee() {
-        List<Employee> response = service.getAllEmpResponse();
+    @GetMapping("/getEmployeeList/{empId}")
+    public ResponseEntity<List<Employee>> getAllEmployee(@PathVariable String empId) {
+        List<Employee> response = service.getAllEmpResponse(empId);
         return ResponseEntity.ok(response);
     }
 
@@ -56,10 +56,17 @@ public class EmployeeController {
 
         return ResponseEntity.ok(service.updateDetails(empId, currentValue));
     }
+
     @PutMapping("/update/{empId}/{status}")
     public ResponseEntity<String> updateEmployeeStatus(@PathVariable String empId, @PathVariable String status) {
 
         return ResponseEntity.ok(service.updateStatus(empId, status.toLowerCase()));
     }
+
+    @PutMapping("/login")
+    public ResponseEntity<String> loginEmp(@Validated @RequestBody LogInRequest request){
+        return ResponseEntity.ok(service.validateCredentials(request));
+    }
+
 
 }
