@@ -2,6 +2,7 @@ package com.employee.service;
 
 import com.employee.configuration.StatusConfiguration;
 import com.employee.constants.EmployeeConstants;
+import com.employee.entity.request.ChangePassword;
 import com.employee.entity.request.EmployeeEntity;
 import com.employee.entity.dto.EmployeeResponseDto;
 import com.employee.entity.request.LogInRequest;
@@ -439,10 +440,25 @@ public class EmployeeService {
         Employee employee = repo.findByEmpId(request.getUserName()).orElseThrow(() -> new EmployeeExceptions("User Not Found: " + request.getUserName()));
         boolean isPasswordMatch = encoder.matches(request.getPassword(),employee.getPassword());
         if (!isPasswordMatch) {
+            System.out.println("inside password not match");
             return "Invalid Password";
         } else if (employee.getEmpId().contains(request.getPassword())) {
+            System.out.println("inside change password");
             return "Change password";
         }
+        System.out.println("inside User credentials validated");
+
         return "User credentials validated";
+    }
+
+    public void changePassword(String empId, ChangePassword request) {
+       Employee emp = repo.findByEmpId(empId).orElseThrow(() -> new EmployeeExceptions("USER NOT FOUND: "+empId));
+        if (request!=null && request.getConfirmPassword().equals(request.getNewPassword())){
+            emp.setPassword(encoder.encode(request.getConfirmPassword()));
+            repo.save(emp);
+            System.out.println("password updated");
+
+        }
+        System.out.println("password not match");
     }
 }

@@ -1,6 +1,7 @@
 package com.employee.controller;
 
 
+import com.employee.entity.request.ChangePassword;
 import com.employee.entity.request.EmployeeEntity;
 import com.employee.entity.request.LogInRequest;
 import com.employee.entity.response.BaseEmployeeResponse;
@@ -8,8 +9,8 @@ import com.employee.entity.response.UpdateResponse;
 import com.employee.model.Employee;
 import com.employee.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/emp")
 public class EmployeeController {
@@ -64,9 +66,13 @@ public class EmployeeController {
     }
 
     @PutMapping("/login")
-    public ResponseEntity<String> loginEmp(@Validated @RequestBody LogInRequest request){
+    public ResponseEntity<String> loginEmp(@Validated @RequestBody LogInRequest request) {
         return ResponseEntity.ok(service.validateCredentials(request));
     }
 
+    @PutMapping("/changePassword/{empId}")
+    public void changePassword(@PathVariable String empId, @Validated @RequestBody ChangePassword request) {
+         service.changePassword(empId,request);
+    }
 
 }
