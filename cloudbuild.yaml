@@ -28,7 +28,7 @@ steps:
         - 'us-central1'
         - '--allow-unauthenticated'
 
-timeout: '120000s'
+timeout: '2800s'
 
 images:
   - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
