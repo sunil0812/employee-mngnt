@@ -1,28 +1,40 @@
 options:
   logging: CLOUD_LOGGING_ONLY
-steps:
-  # Step 1: Checkout the source code
-  - name: 'gcr.io/cloud-builders/git'
-    args: ['clone', 'https://github.com/sunil0812/employee-mngnt.git']
 
-  # Step 2: Build the Docker image
-  - name: 'gcr.io/buildpacks/builder'
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
-      - 'gcr.io/cloudrun/placeholder@sha256:c132b369ddeee62ff1bc847cca842fab5867ea34c04f80b7d61dc5593d6a799e'
-      - '--path=.'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA'
+      - '.'
 
-  # Step 3: Push the Docker image to Google Container Registry (GCR)
+  # Step 2: Push the Docker image to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA']
 
-  # Step 4: Deploy to Google Kubernetes Engine (GKE)
+  # Step 3: Deploy to Google Kubernetes Engine (GKE)
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['container', 'clusters', 'get-credentials', 'your-cluster', '--zone', 'your-zone', '--project', 'impactful-arbor-399720']
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'employee-cluster'  # <-- Replace with actual cluster name
+      - '--zone'
+      - 'us-central1'  # <-- Replace with actual zone
+      - '--project'
+      - 'impactful-arbor-399720'
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['kubectl', 'set', 'image', 'deployment/your-deployment', 'your-container=gcr.io/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA']
+    args:
+      - 'kubectl'
+      - 'set'
+      - 'image'
+      - 'deployment/employee-mngnt-deployment'  # <-- Replace with actual deployment name
+      - 'employee-mngnt=us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA'
 
-timeout: '1200s'  # Optional: Define a timeout for the build
+timeout: '1200s'
+
 images:
-  - 'gcr.io/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA'  # Optional: Define the image to push to registry
+  - 'us-central1-docker.pkg.dev/impactful-arbor-399720/gcf-artifacts/employee-mngnt:$COMMIT_SHA'
