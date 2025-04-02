@@ -9,7 +9,7 @@ steps:
   - name: 'gcr.io/buildpacks/builder'
     args:
       - 'build'
-      - 'gcr.io/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA'
+      - 'gcr.io/impactful-arbor-399720/us-central1-docker.pkg.dev/impactful-arbor-399720/gcf-artifacts/impactful--arbor--399720__us--central1__function--1'
       - '--path=.'
 
   # Step 3: Push the Docker image to Google Container Registry (GCR)
