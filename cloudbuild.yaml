@@ -6,7 +6,7 @@ steps:
     args: ['clone', 'https://github.com/sunil0812/employee-mngnt.git']
 
   # Step 2: Build the Docker image
-  - name: 'gcr.io/buildpacks/builder'
+  - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - 'gcr.io/impactful-arbor-399720/us-central1-docker.pkg.dev/impactful-arbor-399720/gcf-artifacts/impactful--arbor--399720__us--central1__function--1'
