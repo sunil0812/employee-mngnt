@@ -7,12 +7,12 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
       - '.'
 
   # Step 2: Push the Docker image to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA']
 
   # Step 3: Deploy to Google Kubernetes Engine (GKE)
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -32,9 +32,9 @@ steps:
       - 'set'
       - 'image'
       - 'deployment/employee-mngnt-deployment'  # <-- Replace with actual deployment name
-      - 'employee-mngnt=us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA'
+      - 'employee-mngnt=us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
 
 timeout: '1200s'
 
 images:
-  - 'us-central1-docker.pkg.dev/impactful-arbor-399720/gcf-artifacts/employee-mngnt:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
