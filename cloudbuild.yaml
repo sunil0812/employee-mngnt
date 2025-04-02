@@ -8,7 +8,6 @@ steps:
   # Step 2: Build the Docker image
   - name: 'gcr.io/buildpacks/builder'
     args:
-      - 'pack'
       - 'build'
       - 'gcr.io/impactful-arbor-399720/employee-mngnt:$COMMIT_SHA'
       - '--path=.'
