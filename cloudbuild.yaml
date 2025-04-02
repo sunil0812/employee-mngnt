@@ -19,13 +19,13 @@ steps:
     args:
         - 'run'
         - 'deploy'
-        - 'employee-mngnt-service'  # <-- Change to your Cloud Run service name
+        - 'employee-management'
         - '--image'
         - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
         - '--platform'
         - 'managed'
         - '--region'
-        - 'us-central1'  # <-- Change to your preferred region
+        - 'us-central1'
         - '--allow-unauthenticated'
 
 timeout: '1200s'
