@@ -1,13 +1,17 @@
+# Use OpenJDK 17 (or change to 8/11 if needed)
 FROM openjdk:17-jdk
+
+# Explicitly create the /app directory before setting WORKDIR
+RUN mkdir -p /app
 
 # Set working directory inside the container
 WORKDIR /app
 
-# Copy the JAR file from build/libs on your machine to /app inside the container
+# Copy the built JAR file from build/libs directory
 COPY build/libs/employee-mgmnt-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose the port
+# Expose the port Spring Boot runs on
 EXPOSE 8080
 
-# Run the Spring Boot application
+# Command to run the application
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/app.jar"]
