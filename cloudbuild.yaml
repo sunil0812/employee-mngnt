@@ -14,25 +14,19 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA']
 
-  # Step 3: Deploy to Google Kubernetes Engine (GKE)
+  # Step 3: Deploy to Google Cloud Run (GCR)
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
-      - 'container'
-      - 'clusters'
-      - 'get-credentials'
-      - 'employee-cluster'  # <-- Replace with actual cluster name
-      - '--zone'
-      - 'us-central1'  # <-- Replace with actual zone
-      - '--project'
-      - 'impactful-arbor-399720'
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      - 'kubectl'
-      - 'set'
-      - 'image'
-      - 'deployment/employee-mngnt-deployment'  # <-- Replace with actual deployment name
-      - 'employee-mngnt=us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
+        - 'run'
+        - 'deploy'
+        - 'employee-mngnt-service'  # <-- Change to your Cloud Run service name
+        - '--image'
+        - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
+        - '--platform'
+        - 'managed'
+        - '--region'
+        - 'us-central1'  # <-- Change to your preferred region
+        - '--allow-unauthenticated'
 
 timeout: '1200s'
 
