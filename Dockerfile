@@ -3,8 +3,9 @@ FROM openjdk:17-jdk
 
 # Explicitly create the /app directory before setting WORKDIR
 
+
 # Copy the built JAR file from build/libs directory
-ADD build/libs/employee-mgmnt-0.0.1-SNAPSHOT.jar employee-management.jar
+ADD src/build/libs/*.jar employee-management.jar
 
 # Expose the port Spring Boot runs on
 EXPOSE 8080
