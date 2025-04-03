@@ -5,7 +5,7 @@ FROM openjdk:17-jdk
 
 
 # Copy the built JAR file from build/libs directory
-ADD src/build/libs/*.jar employee-management.jar
+ADD src/build/libs/employee-mgmnt-0.01-SNAPSHOT.jar employee-management.jar
 
 # Expose the port Spring Boot runs on
 EXPOSE 8080
