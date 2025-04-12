@@ -8,9 +8,9 @@ RUN mkdir -p /app
 WORKDIR /app
 
 # Copy the built JAR file from build/libs directory
-COPY /build/libs/employee-mgmnt-0.0.1-SNAPSHOT.jar /app/employee-mgmnt-0.0.1-SNAPSHOT.jar
+COPY /build/libs/employee-mgmnt-0.0.1.jar /app/employee-mgmnt-0.0.1.jar
 # Expose the port Spring Boot runs on
 EXPOSE 8080
 
 # Command to run the application
-ENTRYPOINT ["java","-jar", "/app/employee-mgmnt-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar", "/app/employee-mgmnt-0.0.1.jar"]
