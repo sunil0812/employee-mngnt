@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.5'
@@ -20,7 +22,7 @@ configurations {
 repositories {
 	mavenCentral()
 	maven {
-		url 'https://repo.spring.io/plugins-release'
+		url 'https://mvnrepository.com/repos/central'
 	}
 }
 
