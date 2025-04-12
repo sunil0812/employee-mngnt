@@ -68,10 +68,16 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-jar {
-	destinationDirectory = file("$rootDir/jar")
-	archiveFileName = "employee.jar" // optional
-}
+//jar {
+//
+//	destinationDirectory = file("$rootDir/jar")
+//	archiveFileName = "employee.jar" // optional\
+//	manifest {
+//		attributes(
+//				'Main-Class': 'com.employee.EmployeeMgmntApplication' // Replace with your actual main class
+//		)
+//	}
+//}
 
 
 
