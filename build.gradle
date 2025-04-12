@@ -68,5 +68,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+jar {
+	destinationDirectory = file("$rootDir/jar")
+	archiveFileName = "employee.jar" // optional
+}
+
+
 
 

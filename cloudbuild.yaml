@@ -8,8 +8,9 @@ steps:
     args: [ '-c', 'chmod +x ./gradlew' ]
 
   # Step 0: Run Gradle build
-  - name: 'gcr.io/cloud-builders/java/gradle@sha256:6e46e60cf5b5bde9866bcb53f84e4c6b10905a9f2515af2cfb18840b9910d29b'
-    args: [ 'build' ]
+  - name: 'gcr.io/cloud-builders/gradle'
+    entrypoint: './gradlew'
+    args: ['build']
 
   # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
@@ -21,22 +22,22 @@ steps:
 
   # Step 2: Push the Docker image to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'push', 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA' ]
+    args: ['push', 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA']
 
   # Step 3: Deploy to Google Cloud Run (GCR)
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
-      - 'run'
-      - 'deploy'
-      - 'employee-management'
-      - '--image'
-      - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
-      - '--platform'
-      - 'managed'
-      - '--region'
-      - 'us-central1'
-      - '--allow-unauthenticated'
-      - '--port=8080'
+        - 'run'
+        - 'deploy'
+        - 'employee-management'
+        - '--image'
+        - 'us-central1-docker.pkg.dev/impactful-arbor-399720/employee-mngnt/employee-mngnt-image:$COMMIT_SHA'
+        - '--platform'
+        - 'managed'
+        - '--region'
+        - 'us-central1'
+        - '--allow-unauthenticated'
+        - '--port=8080'
 
 timeout: '2800s'
 
