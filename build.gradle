@@ -20,11 +20,38 @@ configurations {
 }
 
 repositories {
-	mavenCentral()
 	maven {
-		url 'https://mvnrepository.com/repos/central'
+		url "https://jfrog.ford.com/artifactory/public-maven-ford"
+		credentials {
+			username = System.getenv("JFROG_USERNAME")
+			password = System.getenv("JFROG_PASSWORD")
+		}
 	}
+	maven {
+		url "https://jfrog.ford.com/artifactory/external-proxy-group"
+		credentials {
+			username = System.getenv("JFROG_USERNAME")
+			password = System.getenv("JFROG_PASSWORD")
+		}
+	}
+	maven {
+		url "https://jfrog.ford.com/artifactory/ecommerce360-catalog"
+		credentials {
+			username = System.getenv("JFROG_USERNAME")
+			password = System.getenv("JFROG_PASSWORD")
+		}
+	}
+	mavenLocal()
+
 }
+
+//
+//repositories {
+//	mavenCentral()
+//	maven {
+//		url 'https://mvnrepository.com/repos/central'
+//	}
+//}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
