@@ -9,6 +9,7 @@ steps:
 
   # Step 0: Run Gradle build
   - name: 'gcr.io/cloud-builders/gradle'
+    dir: 'app'
     entrypoint: './gradlew'
     args: ['build']
 
