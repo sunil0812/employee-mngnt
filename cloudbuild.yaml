@@ -2,9 +2,10 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
+  # Step 0: Run Gradle build
   - name: 'gcr.io/cloud-builders/gradle'
-  - entrypoint: './gradlew'
-  - args: [ 'build' ]
+    entrypoint: './gradlew'
+    args: ['build']
 
   # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
