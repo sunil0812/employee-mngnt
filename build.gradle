@@ -68,16 +68,12 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-//jar {
-//
-//	destinationDirectory = file("$rootDir/jar")
-//	archiveFileName = "employee.jar" // optional\
-//	manifest {
-//		attributes(
-//				'Main-Class': 'com.employee.EmployeeMgmntApplication' // Replace with your actual main class
-//		)
-//	}
-//}
+task copyJar(type: Copy) {
+	from "build/libs/${rootProject.name}-${version}.jar"
+	into "jar/"
+}
+
+build.finalizedBy copyJar
 
 
 
