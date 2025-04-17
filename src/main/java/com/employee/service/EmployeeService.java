@@ -2,8 +2,10 @@ package com.employee.service;
 
 import com.employee.configuration.StatusConfiguration;
 import com.employee.constants.EmployeeConstants;
+import com.employee.entity.request.ChangePassword;
 import com.employee.entity.request.EmployeeEntity;
 import com.employee.entity.dto.EmployeeResponseDto;
+import com.employee.entity.request.LogInRequest;
 import com.employee.entity.response.BaseEmployeeResponse;
 import com.employee.entity.response.EmployeeResponse;
 import com.employee.entity.response.ManagerData;
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -51,6 +54,8 @@ public class EmployeeService {
 
     private final StatusConfiguration values;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
     public EmployeeService(StatusConfiguration values, EmployeeRepo repo, TeamRepo teamRepo, ManagerRepo managerRepo, ObjectMapper mapper, EmployeeNameTrackingRepo nameRepo) {
         this.values = values;
         this.nameRepo = nameRepo;
@@ -74,8 +79,9 @@ public class EmployeeService {
         employee.setName(emp.getName());
         employee.setEmail(emp.getEmail());
         employee.setEmpType(emp.getEmpType());
+        employee.setPassword(encoder.encode(employee.getEmpId()));
         employee.setPhone(emp.getPhone());
-        employee.setRole(validateRole(emp.getRole()));
+        employee.setRole(validateRole(emp.getRole()).toUpperCase());
         employee.setBankDetails(convertToJson(emp.getBankDetails()));
         employee.setGender(emp.getGender());
         employee.setAddress(convertToJson(emp.getAddress()));
@@ -121,11 +127,12 @@ public class EmployeeService {
             validatePhoneEmail(emp);
             Employee employee = new Employee();
             employee.setEmpId(getEmpId(emp.getName()));
+            employee.setPassword(encoder.encode(employee.getEmpId()));
             employee.setName(emp.getName());
             employee.setEmail(emp.getEmail());
             employee.setEmpType(emp.getEmpType());
             employee.setPhone(emp.getPhone());
-            employee.setRole(validateRole(emp.getRole()));
+            employee.setRole(validateRole(emp.getRole()).toUpperCase());
             employee.setBankDetails(convertToJson(emp.getBankDetails()));
             employee.setGender(emp.getGender());
             employee.setAddress(convertToJson(emp.getAddress()));
@@ -399,12 +406,21 @@ public class EmployeeService {
                 .build();
     }
 
-    public List<Employee> getAllEmpResponse() {
+    public List<Employee> getAllEmpResponse(String empId) {
+       ArrayList<Employee> employeeList = new ArrayList<>();
+        Employee employee = repo.findByEmpId(empId).orElseThrow(() -> new EmployeeExceptions("USER NOT FOUND"));
+        if (employee.getRole().equals("MANAGER")){
+           Team team = teamRepo.findByManagerEmpId(empId);
+           team.getTeamMembers().forEach(a -> {
+                  Employee emp = repo.findByEmpId(a).orElseThrow(() -> new EmployeeExceptions("USER NOT FOUND: "+a));
+                 employeeList.add(emp);
+           });
+           return employeeList;
+        }
         List<Employee> emp = repo.findAll();
         if (emp == null || emp.isEmpty()) throw new EmployeeExceptions("No Data found");
 //        emp.stream().filter(employee -> employee.getUpdatedAt() != null && employee.getCreatedAt() != null).forEach(EmployeeService::formatTimestamp);
         return emp;
-
     }
 
     public static void formatTimestamp(Employee emp) {
@@ -419,4 +435,30 @@ public class EmployeeService {
 
     }
 
+    public String validateCredentials(LogInRequest request) {
+
+        Employee employee = repo.findByEmpId(request.getUserName()).orElseThrow(() -> new EmployeeExceptions("User Not Found: " + request.getUserName()));
+        boolean isPasswordMatch = encoder.matches(request.getPassword(),employee.getPassword());
+        if (!isPasswordMatch) {
+            System.out.println("inside password not match");
+            return "Invalid Password";
+        } else if (employee.getEmpId().contains(request.getPassword())) {
+            System.out.println("inside change password");
+            return "Change password";
+        }
+        System.out.println("inside User credentials validated");
+
+        return "User credentials validated";
+    }
+
+    public void changePassword(String empId, ChangePassword request) {
+       Employee emp = repo.findByEmpId(empId).orElseThrow(() -> new EmployeeExceptions("USER NOT FOUND: "+empId));
+        if (request!=null && request.getConfirmPassword().equals(request.getNewPassword())){
+            emp.setPassword(encoder.encode(request.getConfirmPassword()));
+            repo.save(emp);
+            System.out.println("password updated");
+
+        }
+        System.out.println("password not match");
+    }
 }

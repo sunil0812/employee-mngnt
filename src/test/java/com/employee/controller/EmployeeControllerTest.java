@@ -74,8 +74,8 @@ public class EmployeeControllerTest {
         response.setName("we13");
         response.setEmpId("we123");
 
-        Mockito.when(service.getAllEmpResponse()).thenReturn(List.of(response));
-        ResponseEntity<List<Employee>> empResponse = controller.getAllEmployee();
+        Mockito.when(service.getAllEmpResponse("we13")).thenReturn(List.of(response));
+        ResponseEntity<List<Employee>> empResponse = controller.getAllEmployee("we13");
         Assertions.assertEquals(HttpStatus.OK, empResponse.getStatusCode());
         Assertions.assertEquals(Objects.requireNonNull(empResponse.getBody()).get(0).getName(), response.getName());
     }

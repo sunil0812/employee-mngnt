@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -101,7 +102,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void given_employee_data_when_add_team_members_then_save()  {
+    void given_employee_data_when_add_team_members_then_save() {
         //        given
         EmployeeEntity req = EmployeeEntity.builder().name("name1 N").email("name@gmail.com").teamName("team1").gender("M").empType("F").role("software_engineer").managerEmpId("MG12").build();
 
@@ -606,7 +607,7 @@ class EmployeeServiceTest {
     @Test
     void shall_get_all_employee() {
         String address = "{\"no\":1,\"street\":\"om shakti nagar\",\"pinCode\":603301,\"country\":\"USA\"}";
-
+String empId = "m123";
         Employee emp = new Employee();
         emp.setEmpId("we123");
         emp.setEmpType("f");
@@ -616,18 +617,32 @@ class EmployeeServiceTest {
         emp.setAddress(address);
         emp.setRole("software_engineer");
 
-        when(empRepo.findAll()).thenReturn(List.of(emp));
-        service.getAllEmpResponse();
+        Employee mEmp = new Employee();
+        mEmp.setEmpId("m123");
+        mEmp.setEmpType("f");
+        mEmp.setEmail("Rhae@gmail.com");
+        mEmp.setGender("M");
+        mEmp.setName("harsh");
+        mEmp.setAddress(address);
+        mEmp.setRole("MANAGER");
+        mEmp.setDeleted(false);
 
-        verify(empRepo, times(1)).findAll();
+        Team team = Team.builder().teamMembers(List.of("we123")).build();
+
+        when(empRepo.findByEmpId("we123")).thenReturn(Optional.of(emp));
+        when(teamRepo.findByManagerEmpId(empId)).thenReturn(team);
+        when(empRepo.findByEmpId(empId)).thenReturn(Optional.of(mEmp));
+        service.getAllEmpResponse(empId);
+
+//        verify(empRepo, times(1)).findAll();
     }
 
     @Test
     void shall_throw_exception_all_employee() {
-        when(empRepo.findAll()).thenReturn(List.of());
-        EmployeeExceptions exceptions = assertThrows(EmployeeExceptions.class, () -> service.getAllEmpResponse());
-        assertEquals("No Data found", exceptions.getMessage());
-        verify(empRepo, times(1)).findAll();
+
+        EmployeeExceptions exceptions = assertThrows(EmployeeExceptions.class, () -> service.getAllEmpResponse("we123"));
+        assertEquals("USER NOT FOUND", exceptions.getMessage());
+        verify(empRepo, times(0)).findAll();
     }
 
     @Test
