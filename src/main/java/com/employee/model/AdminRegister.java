@@ -26,7 +26,6 @@ public class AdminRegister {
     private String address;
     private String bankDetails;
     private String companyDetails;
-    private String teamDetails;
-    private boolean isActive;
+    private boolean emailVerified;
     private Timestamp createdAt;
 }

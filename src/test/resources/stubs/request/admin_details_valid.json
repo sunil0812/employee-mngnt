@@ -1,0 +1,27 @@
+{
+  "name": "sample",
+  "email": "sample@gmail.com",
+  "phone": "+91 1671663190",
+  "gender": "M",
+  "dob": "05-10-2022",
+  "companyDetails": {
+    "name": "Test Company",
+    "phoneNo": "test1234",
+    "companyAddress": {
+      "no": "1",
+      "street": "13 Main St",
+      "pinCode": "65718",
+      "country": "USA"
+    }
+  },
+  "bankDetails": {
+    "accountNo": "1104567890",
+    "ifscCode": "XXZB1001214"
+  },
+  "address": {
+    "no": "3",
+    "street": "13 Main St",
+    "pinCode": "65705",
+    "country": "USA"
+  }
+}

@@ -57,7 +57,4 @@ public class AdminRegisterRequest {
     @NotNull
     private Company companyDetails;
 
-    @Schema(description = "Team details of the employee")
-    @NotNull
-    private String teamName;
 }
