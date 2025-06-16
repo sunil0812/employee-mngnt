@@ -34,7 +34,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("attendance/save","emp/getEmployee/**").hasAnyAuthority("SOFTWARE_ENGINEER","MANAGER")
                                 .requestMatchers("emp/login","emp/changePassword/**").permitAll()
                                 .requestMatchers("/dashboard/logIn","team/getTeam","emp/getEmployeeList/**").hasAuthority("MANAGER")
-                                .requestMatchers("/emp/**","team/**","/dashboard/**","attendance/**").hasAuthority("MANAGER")
+                                .requestMatchers("/emp/**","team/**","/dashboard/**","attendance/**").hasAuthority("ADMIN")
                                 .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(

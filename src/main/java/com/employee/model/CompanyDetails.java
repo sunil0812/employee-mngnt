@@ -5,29 +5,30 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
 
+
 @Entity
 @Data
 @Builder
-@Table(schema = "admin_register", name = "admin_data")
-public class AdminRegister {
+@Table(schema = "admin_register", name = "company_details")
+public class CompanyDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
     private String name;
-    @Pattern(regexp = "[a-zA-Z0-9]+@[a-z]{3,10}.[a-z]{3}")
+    @NotNull
     private String email;
+    @NotNull
     private String phone;
-    private String gender;
-    private String dob;
+    @NotNull
     private String address;
-    private String bankDetails;
-    private String companyDetails;
-    private boolean emailVerified;
+    private boolean isActive;
     private Timestamp createdAt;
 }

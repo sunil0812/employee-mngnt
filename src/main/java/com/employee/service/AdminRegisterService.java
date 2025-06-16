@@ -3,13 +3,18 @@ package com.employee.service;
 import com.employee.entity.request.AdminRegisterRequest;
 import com.employee.exception.EmployeeExceptions;
 import com.employee.model.AdminRegister;
+import com.employee.model.Company;
+import com.employee.model.CompanyDetails;
 import com.employee.model.ValidateDetails;
 import com.employee.repository.AdminRegisterRepo;
+import com.employee.repository.CompanyDetailsRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.util.regex.Pattern;
 
 import static com.employee.model.ValidateDetails.COMPNAME;
@@ -27,6 +32,10 @@ public class AdminRegisterService {
     @Autowired
     private AdminRegisterRepo repo;
 
+    @Autowired
+    private CompanyDetailsRepo companyRepo;
+
+    @Transactional
     public String register(AdminRegisterRequest adminRegister) {
         try {
             AdminRegister value = AdminRegister.builder()
@@ -40,10 +49,17 @@ public class AdminRegisterService {
                     .companyDetails(mapper.writeValueAsString(adminRegister.getCompanyDetails()))
                     .build();
             repo.save(value);
+            saveCompanyDetails(adminRegister);
         } catch (JsonProcessingException exception) {
             throw new EmployeeExceptions(exception.getMessage());
         }
         return "Admin Detail Registered";
+    }
+
+    private void saveCompanyDetails(AdminRegisterRequest value) throws JsonProcessingException {
+        Company comp = value.getCompanyDetails();
+        CompanyDetails company = CompanyDetails.builder().name(comp.getName()).phone(comp.getPhone()).email(comp.getEmail()).address(comp.getAddress().toString()).build();
+        companyRepo.save(company);
     }
 
     public String validate(ValidateDetails details) {
@@ -58,7 +74,7 @@ public class AdminRegisterService {
             case "email" -> {
                 boolean matched = isValidEmail(details.getValue());
                 if (repo.existsByEmail(details.getValue()) || !matched) {
-                    throw new EmployeeExceptions(matched ? "Email Already Taken" : "InValid Email" );
+                    throw new EmployeeExceptions(matched ? "Email Already Taken" : "InValid Email");
                 }
                 yield EMAIL + validated;
             }
@@ -72,13 +88,13 @@ public class AdminRegisterService {
                 if (repo.existsByCompanyName(details.getValue())) {
                     throw new EmployeeExceptions("Company Name Already Taken");
                 }
-                yield  COMPNAME + validated;
+                yield COMPNAME + validated;
             }
             default -> "Given Field not for validation";
         };
     }
 
     private boolean isValidEmail(String mail) {
-       return Pattern.compile("[a-zA-Z0-9]+@[a-z]{3,10}.[a-z]{3}").matcher(mail).matches();
+        return Pattern.compile("[a-zA-Z0-9]+@[a-z]{3,10}.[a-z]{3}").matcher(mail).matches();
     }
 }
