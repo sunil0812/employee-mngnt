@@ -56,9 +56,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-	testImplementation 'org.flywaydb:flyway-core:10.22.0'
-	testImplementation 'org.flywaydb:flyway-database-postgresql:10.22.0'
-	testImplementation group: 'org.flywaydb.flyway-test-extensions', name: 'flyway-spring-test', version: '10.0.0'
 	testImplementation 'io.zonky.test:embedded-database-spring-test:2.5.1'
 	testImplementation 'io.zonky.test:embedded-postgres:2.0.7'
 
