@@ -7,7 +7,7 @@ import java.util.List;
 
 public enum EmployeeConstants {
 
-    SOFTWARE_ENGINEER(List.of("software_engineer", "developer", "engineer")),
+    SOFTWARE_ENGINEER(List.of("software_engineer", "developer")),
     ADMIN(List.of("admin")),
     HR(List.of("human_resources")),
     MANAGER(List.of("manager")),
@@ -35,6 +35,6 @@ public enum EmployeeConstants {
                 return constant;
             }
         }
-        throw new EmployeeExceptions("Given Role Not found : " + role);
+        throw new EmployeeExceptions("Given Role Not found :" + role);
     }
 }

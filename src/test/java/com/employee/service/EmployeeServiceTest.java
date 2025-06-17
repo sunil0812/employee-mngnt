@@ -11,6 +11,7 @@ import com.employee.model.BankDetails;
 import com.employee.model.Employee;
 import com.employee.model.Manager;
 import com.employee.model.Team;
+import com.employee.repository.CompanyDetailsRepo;
 import com.employee.repository.EmployeeNameTrackingRepo;
 import com.employee.repository.EmployeeRepo;
 import com.employee.repository.ManagerRepo;
@@ -55,6 +56,9 @@ class EmployeeServiceTest {
 
     @Mock
     private EmployeeRepo empRepo;
+
+    @Mock
+    private CompanyDetailsRepo companyDetailsRepo;
 
     @Mock
     private EmployeeNameTrackingRepo nameTrackingRepo;
@@ -276,7 +280,7 @@ class EmployeeServiceTest {
         EmployeeExceptions response = assertThrows(EmployeeExceptions.class, () -> service.saveEmp(req));
 
         //then
-        assertEquals("Given Role Not found " + req.getRole(), response.getMessage());
+        assertEquals("Given Role Not found :" + req.getRole(), response.getMessage());
     }
 
     @Test
@@ -634,7 +638,7 @@ String empId = "m123";
         when(empRepo.findByEmpId(empId)).thenReturn(Optional.of(mEmp));
         service.getAllEmpResponse(empId);
 
-//        verify(empRepo, times(1)).findAll();
+        verify(empRepo, times(1)).findByEmpId(empId);
     }
 
     @Test

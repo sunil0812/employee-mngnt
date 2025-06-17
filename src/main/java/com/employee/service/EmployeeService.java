@@ -58,6 +58,7 @@ public class EmployeeService {
     private final StatusConfiguration values;
 
     private final CompanyDetailsRepo companyRepo;
+
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     public EmployeeService(StatusConfiguration values, EmployeeRepo repo, TeamRepo teamRepo, ManagerRepo managerRepo, ObjectMapper mapper, EmployeeNameTrackingRepo nameRepo, CompanyDetailsRepo companyRepo) {
