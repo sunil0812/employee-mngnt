@@ -29,6 +29,5 @@ public class CompanyDetails {
     private String phone;
     @NotNull
     private String address;
-    private boolean isActive;
     private Timestamp createdAt;
 }

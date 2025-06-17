@@ -58,7 +58,7 @@ public class AdminRegisterService {
 
     private void saveCompanyDetails(AdminRegisterRequest value) throws JsonProcessingException {
         Company comp = value.getCompanyDetails();
-        CompanyDetails company = CompanyDetails.builder().name(comp.getName()).phone(comp.getPhone()).email(comp.getEmail()).address(comp.getAddress().toString()).build();
+        CompanyDetails company = CompanyDetails.builder().name(comp.getName()).phone(comp.getPhone()).email(comp.getEmail()).address(mapper.writeValueAsString(comp.getAddress())).build();
         companyRepo.save(company);
     }
 

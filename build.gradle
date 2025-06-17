@@ -65,12 +65,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-task copyJar(type: Copy) {
-	from "build/libs/${rootProject.name}-${version}.jar"
-	into "jar/"
-}
 
-build.finalizedBy copyJar
 
 
 
