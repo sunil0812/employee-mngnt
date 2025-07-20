@@ -30,10 +30,11 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
         return security.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("attendance/save","emp/getEmployee/**").hasAnyAuthority("SOFTWARE_ENGINEER","MANAGER")
+                        request.requestMatchers("/register/**","/register/hello").permitAll()
+                                .requestMatchers("attendance/save","emp/getEmployee/**").hasAnyAuthority("SOFTWARE_ENGINEER","MANAGER")
                                 .requestMatchers("emp/login","emp/changePassword/**").permitAll()
                                 .requestMatchers("/dashboard/logIn","team/getTeam","emp/getEmployeeList/**").hasAuthority("MANAGER")
-                                .requestMatchers("/emp/**","team/**","/dashboard/**","attendance/**").hasAuthority("MANAGER")
+                                .requestMatchers("/emp/**","team/**","/dashboard/**","attendance/**").hasAuthority("ADMIN")
                                 .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(

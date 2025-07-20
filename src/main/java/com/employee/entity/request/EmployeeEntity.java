@@ -2,6 +2,7 @@ package com.employee.entity.request;
 
 import com.employee.model.Address;
 import com.employee.model.BankDetails;
+import com.employee.model.CompanyDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -72,4 +73,8 @@ public class EmployeeEntity {
     @Schema(description = "Address of the employee")
     @NotNull
     private Address address;
+
+    @Schema(description = "Employee company data")
+    @NotNull
+    private Long companyDetails;
 }

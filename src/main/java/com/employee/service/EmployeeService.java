@@ -15,10 +15,12 @@ import com.employee.entity.response.UpdateResponse;
 import com.employee.exception.EmployeeExceptions;
 import com.employee.model.Address;
 import com.employee.model.BankDetails;
+import com.employee.model.CompanyDetails;
 import com.employee.model.Employee;
 import com.employee.model.EmployeeNameTracking;
 import com.employee.model.Manager;
 import com.employee.model.Team;
+import com.employee.repository.CompanyDetailsRepo;
 import com.employee.repository.EmployeeNameTrackingRepo;
 import com.employee.repository.EmployeeRepo;
 import com.employee.repository.ManagerRepo;
@@ -35,6 +37,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.employee.constants.EmployeeConstants.validateRole;
 import static com.employee.model.Employee.empIdByName;
 import static com.employee.model.Employee.empIdFirstName;
 
@@ -54,15 +57,18 @@ public class EmployeeService {
 
     private final StatusConfiguration values;
 
+    private final CompanyDetailsRepo companyRepo;
+
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public EmployeeService(StatusConfiguration values, EmployeeRepo repo, TeamRepo teamRepo, ManagerRepo managerRepo, ObjectMapper mapper, EmployeeNameTrackingRepo nameRepo) {
+    public EmployeeService(StatusConfiguration values, EmployeeRepo repo, TeamRepo teamRepo, ManagerRepo managerRepo, ObjectMapper mapper, EmployeeNameTrackingRepo nameRepo, CompanyDetailsRepo companyRepo) {
         this.values = values;
         this.nameRepo = nameRepo;
         this.mapper = mapper;
         this.managerRepo = managerRepo;
         this.teamRepo = teamRepo;
         this.repo = repo;
+        this.companyRepo = companyRepo;
     }
 
     @Transactional
@@ -81,7 +87,7 @@ public class EmployeeService {
         employee.setEmpType(emp.getEmpType());
         employee.setPassword(encoder.encode(employee.getEmpId()));
         employee.setPhone(emp.getPhone());
-        employee.setRole(validateRole(emp.getRole()).toUpperCase());
+        employee.setRole(validateRole(emp.getRole()).toString());
         employee.setBankDetails(convertToJson(emp.getBankDetails()));
         employee.setGender(emp.getGender());
         employee.setAddress(convertToJson(emp.getAddress()));
@@ -96,10 +102,17 @@ public class EmployeeService {
                 teamRepo.updateManagerEmpId(employee.getEmpId(), emp.getTeamName());
             }
         }
+        //  add company details
+        appendCompanyDetails(emp,employee);
         repo.save(employee);
-        log.info("New Employee Info Added - Name {} Role {} ", emp.getName(), emp.getRole());
+        log.info("New Manager Info Added - Name {} Role {} ", emp.getName(), emp.getRole());
         saveManagerDataDB(emp, empId);
         return employee;
+    }
+
+    private void appendCompanyDetails(EmployeeEntity emp, Employee employee) {
+        CompanyDetails value = companyRepo.getByCompanyId(emp.getCompanyDetails());
+        employee.setCompanyDetails(value);
     }
 
     private void saveManagerDataDB(EmployeeEntity emp, String empId) {
@@ -132,7 +145,7 @@ public class EmployeeService {
             employee.setEmail(emp.getEmail());
             employee.setEmpType(emp.getEmpType());
             employee.setPhone(emp.getPhone());
-            employee.setRole(validateRole(emp.getRole()).toUpperCase());
+            employee.setRole(validateRole(emp.getRole()).toString());
             employee.setBankDetails(convertToJson(emp.getBankDetails()));
             employee.setGender(emp.getGender());
             employee.setAddress(convertToJson(emp.getAddress()));
@@ -145,7 +158,8 @@ public class EmployeeService {
                 team.setTeamCount(members.size());
                 team.setTeamMembers(members);
                 employee.setTeamId(team);
-
+//                add company details
+                appendCompanyDetails(emp,employee);
                 repo.save(employee);
                 teamRepo.save(team);
                 log.info("New Employee Info Added - Name {} Role {}", employee.getName(), employee.getRole());
@@ -164,9 +178,7 @@ public class EmployeeService {
         if (existPhone || existMail) throw new EmployeeExceptions("Mail or Phone already Existed");
     }
 
-    private String validateRole(String role) {
-        return Arrays.stream(EmployeeConstants.values()).filter(e -> e.name().equalsIgnoreCase(role.toUpperCase())).findFirst().orElseThrow(() -> new EmployeeExceptions("Given Role Not found " + role)).toString();
-    }
+
 
     private String convertToJson(Object data) {
         try {

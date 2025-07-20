@@ -40,6 +40,9 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "team_id", referencedColumnName = "id")
     private Team teamId;
+    @ManyToOne
+    @JoinColumn(name = "company_details", referencedColumnName = "id")
+    private CompanyDetails companyDetails;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String password;
