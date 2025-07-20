@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
         return security.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/register/**").permitAll()
+                        request.requestMatchers("/register/**","/register/hello").permitAll()
                                 .requestMatchers("attendance/save","emp/getEmployee/**").hasAnyAuthority("SOFTWARE_ENGINEER","MANAGER")
                                 .requestMatchers("emp/login","emp/changePassword/**").permitAll()
                                 .requestMatchers("/dashboard/logIn","team/getTeam","emp/getEmployeeList/**").hasAuthority("MANAGER")
