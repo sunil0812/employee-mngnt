@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -58,6 +59,9 @@ public class AdminRegisterService {
     private String authKey;
 
     @Autowired
+    private JwtService jwtService;
+
+    @Autowired
     private MSG91WhatsUpClient whatsUpClient;
     private static final String TEMPLATE = "template";
 
@@ -75,7 +79,7 @@ public class AdminRegisterService {
                     .companyDetails(mapper.writeValueAsString(adminRegister.getCompanyDetails()))
                     .build();
             repo.save(value);
-            sendMailToAdminVerify(value.getEmail());
+            sendMailToAdminVerify(value.getEmail(), value.getPhone(),value.getName());
             saveCompanyDetails(adminRegister);
         } catch (Exception exception) {
             throw new EmployeeExceptions(exception.getMessage());
@@ -83,10 +87,16 @@ public class AdminRegisterService {
         return "Admin Detail Registered";
     }
 
-    private void sendMailToAdminVerify(String mail) throws IOException, MessagingException {
+    private void sendMailToAdminVerify(String mail,String phone,String name) throws IOException, MessagingException {
         ClassPathResource resource = new ClassPathResource("templates/verify-mail.html");
         String content = Files.readString(resource.getFile().toPath());
-        String finalValue = content.replace("{{verification_link}}", "https://www.google.com/");
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", name);
+        claims.put("email", mail);
+        claims.put("phone", phone);
+       String token = jwtService.generateToken(claims);
+        System.out.println(" token -->"+token);
+        String finalValue = content.replace("{{verification_link}}", "https://sunil0812.github.io/Employee-management-Front/otp.html?token="+token);
         emailService.sendEmail(mail, "Verify Admin", finalValue);
     }
 
