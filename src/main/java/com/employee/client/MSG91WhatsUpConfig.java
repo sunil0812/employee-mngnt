@@ -19,5 +19,4 @@ public class MSG91WhatsUpConfig {
             requestTemplate.header("authkey", whatsUpKey);
         };
     }
-
 }
