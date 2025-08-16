@@ -102,7 +102,6 @@ public class AdminRegisterService {
         claims.put("email", mail);
         claims.put("phone", phone);
        String token = generateToken(claims);
-        System.out.println(" token -->"+token);
         String finalValue = content.replace("{{verification_link}}", "https://sunil0812.github.io/Employee-management-Front/otp.html?token="+token);
         emailService.sendEmail(mail, "Verify Admin", finalValue);
     }
@@ -151,12 +150,10 @@ public class AdminRegisterService {
 
     public String sendOtpMsg91WhatsApp(String phone) {
         if (!expiryDates.before(new Date())) {
-            System.out.println("expiry --> " + expiryDates);
             String otp = String.valueOf((int) (100000 + Math.random() * 900000));
             otpStorage.put(phone, otp);
             OtpRequest request = OtpRequest.builder().integratedNumber("919384168225").contentType(TEMPLATE).payload(toHashMap(otp, phone)).build();
             MSG91Response response = whatsUpClient.sendWhatsAppMessage(authKey, request).getBody();
-            System.out.println(response);
             return response != null && response.getStatus().equalsIgnoreCase("success") && !Boolean.parseBoolean(response.getHasError()) ? "OTP sent via WhatsUp ":" Failed For Some Reason ";
         }
         throw new EmployeeExceptions("Link Expired");
@@ -230,27 +227,5 @@ public class AdminRegisterService {
                 .setExpiration(expiryDate)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    // Add this method for token validation
-    public void validateToken(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            Date issuedAt = claims.getIssuedAt();
-            Date now = new Date();
-            long fifteenMinutesInMillis = 15 * 60 * 1000;
-
-            if (now.getTime() - issuedAt.getTime() > fifteenMinutesInMillis) {
-                throw new RuntimeException("Link expired: Token was issued more than 15 minutes ago.");
-            }
-        } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Link expired: Token has expired.", e);
-        } catch (JwtException e) {
-            throw new RuntimeException("Invalid token.", e);
-        }
     }
 }
