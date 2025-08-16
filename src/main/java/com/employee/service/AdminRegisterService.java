@@ -3,6 +3,7 @@ package com.employee.service;
 import com.employee.client.MSG91WhatsUpClient;
 import com.employee.entity.request.AdminRegisterRequest;
 import com.employee.entity.request.OtpRequest;
+import com.employee.entity.response.MSG91Response;
 import com.employee.exception.EmployeeExceptions;
 import com.employee.model.AdminRegister;
 import com.employee.model.Company;
@@ -12,23 +13,26 @@ import com.employee.repository.AdminRegisterRepo;
 import com.employee.repository.CompanyDetailsRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.Key;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +69,9 @@ public class AdminRegisterService {
     private MSG91WhatsUpClient whatsUpClient;
     private static final String TEMPLATE = "template";
 
+    private Date expiryDates;
+
+    private final Map<String, String> otpStorage = new HashMap<>();
     @Transactional
     public String register(AdminRegisterRequest adminRegister) {
         try {
@@ -94,7 +101,7 @@ public class AdminRegisterService {
         claims.put("name", name);
         claims.put("email", mail);
         claims.put("phone", phone);
-       String token = jwtService.generateToken(claims);
+       String token = generateToken(claims);
         System.out.println(" token -->"+token);
         String finalValue = content.replace("{{verification_link}}", "https://sunil0812.github.io/Employee-management-Front/otp.html?token="+token);
         emailService.sendEmail(mail, "Verify Admin", finalValue);
@@ -142,13 +149,17 @@ public class AdminRegisterService {
         return Pattern.compile("[a-zA-Z0-9]+@[a-z]{3,10}.[a-z]{3}").matcher(mail).matches();
     }
 
-    public boolean sendOtpMsg91WhatsApp(String phone) {
-        String otp = String.valueOf((int) (100000 + Math.random() * 900000));
-
-        OtpRequest request = OtpRequest.builder().integratedNumber("919384168225").contentType(TEMPLATE).payload(toHashMap(otp, phone)).build();
-        whatsUpClient.sendWhatsAppMessage(authKey, request);
-
-        return true;
+    public String sendOtpMsg91WhatsApp(String phone) {
+        if (!expiryDates.before(new Date())) {
+            System.out.println("expiry --> " + expiryDates);
+            String otp = String.valueOf((int) (100000 + Math.random() * 900000));
+            otpStorage.put(phone, otp);
+            OtpRequest request = OtpRequest.builder().integratedNumber("919384168225").contentType(TEMPLATE).payload(toHashMap(otp, phone)).build();
+            MSG91Response response = whatsUpClient.sendWhatsAppMessage(authKey, request).getBody();
+            System.out.println(response);
+            return response != null && response.getStatus().equalsIgnoreCase("success") && !Boolean.parseBoolean(response.getHasError()) ? "OTP sent via WhatsUp ":" Failed For Some Reason ";
+        }
+        throw new EmployeeExceptions("Link Expired");
     }
 
     private Map<String, Object> toHashMap(String otp, String phone) {
@@ -190,5 +201,56 @@ public class AdminRegisterService {
                 "to", List.of(phone),
                 "components", components
         );
+    }
+
+    public String verifyOtp(Map<String, String> request) {
+        if (!expiryDates.before(new Date())) {
+            String phone = request.get("phone");
+            String enteredOtp = request.get("otp");
+            String correctOtp = otpStorage.get(phone);
+            if (correctOtp != null && correctOtp.equals(enteredOtp)) {
+                otpStorage.remove(phone);
+                return "SUCCESS: OTP Verified Successfully";
+            }
+            return "INVALID: Invalid OTP";
+        }
+        return "EXPIRED: Link Expired ";
+    }
+
+    private final Key secretKey = Keys.hmacShaKeyFor("your-256-bit-secret-your-256-bit-secret".getBytes());
+
+    public String generateToken(Map<String, Object> claims) {
+        long expirationMillis = 1000 * 60 * 5; // 5 minutes
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationMillis);
+        expiryDates = new Date(expiryDate.getTime());
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Add this method for token validation
+    public void validateToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            Date issuedAt = claims.getIssuedAt();
+            Date now = new Date();
+            long fifteenMinutesInMillis = 15 * 60 * 1000;
+
+            if (now.getTime() - issuedAt.getTime() > fifteenMinutesInMillis) {
+                throw new RuntimeException("Link expired: Token was issued more than 15 minutes ago.");
+            }
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("Link expired: Token has expired.", e);
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid token.", e);
+        }
     }
 }
