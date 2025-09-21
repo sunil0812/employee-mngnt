@@ -38,7 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static com.employee.model.ValidateDetails.COMPDOMAIN;
 import static com.employee.model.ValidateDetails.COMPNAME;
+import static com.employee.model.ValidateDetails.COMPPHONE;
 import static com.employee.model.ValidateDetails.EMAIL;
 import static com.employee.model.ValidateDetails.NAME;
 import static com.employee.model.ValidateDetails.PHONE;
@@ -61,6 +63,9 @@ public class AdminRegisterService {
 
     @Value("${msg91.whatsup.key}")
     private String authKey;
+
+    @Value("${domain.check}")
+    private boolean domainCheck;
 
     @Autowired
     private JwtService jwtService;
@@ -100,7 +105,7 @@ public class AdminRegisterService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("name", name);
         claims.put("email", mail);
-        claims.put("phone", phone);
+        claims.put("phoneNo", phone);
        String token = generateToken(claims);
         String finalValue = content.replace("{{verification_link}}", "https://sunil0812.github.io/Employee-management-Front/otp.html?token="+token);
         emailService.sendEmail(mail, "Verify Admin", finalValue);
@@ -108,7 +113,7 @@ public class AdminRegisterService {
 
     private void saveCompanyDetails(AdminRegisterRequest value) throws JsonProcessingException {
         Company comp = value.getCompanyDetails();
-        CompanyDetails company = CompanyDetails.builder().name(comp.getName()).phone(comp.getPhone()).email(comp.getEmail()).address(mapper.writeValueAsString(comp.getAddress())).build();
+        CompanyDetails company = CompanyDetails.builder().name(comp.getName()).phone(comp.getPhone()).domain(comp.getDomain()).address(mapper.writeValueAsString(comp.getAddress())).build();
         companyRepo.save(company);
     }
 
@@ -116,29 +121,43 @@ public class AdminRegisterService {
         String validated = "Validated ";
         return switch (details.getField()) {
             case "phone" -> {
-                if (repo.existsByPhone(details.getValue())) {
-                    throw new EmployeeExceptions("Phone Number Already Taken");
+                if (repo.existsByPhone("+91"+details.getValue())) {
+                    yield "Phone Already Taken";
                 }
                 yield PHONE + validated;
             }
             case "email" -> {
                 boolean matched = isValidEmail(details.getValue());
-                if (repo.existsByEmail(details.getValue()) || !matched) {
-                    throw new EmployeeExceptions(matched ? "Email Already Taken" : "InValid Email");
+                if (repo.existsByEmail(details.getValue().toLowerCase()) || !matched) {
+                    yield matched ? "Email Already Taken" : "InValid Email";
                 }
                 yield EMAIL + validated;
             }
-            case "name" -> {
-                if (repo.existsByName(details.getValue())) {
-                    throw new EmployeeExceptions("Name Already Taken");
+            case "adminName" -> {
+                if (repo.existsByName(details.getValue().toLowerCase())) {
+                    yield "Name Already Taken";
                 }
                 yield NAME + validated;
             }
             case "companyName" -> {
-                if (repo.existsByCompanyName(details.getValue())) {
-                    throw new EmployeeExceptions("Company Name Already Taken");
+                if (companyRepo.existsByName(details.getValue())) {
+                    yield "Company Name Already Taken";
                 }
                 yield COMPNAME + validated;
+            }
+            case "companyPhone" -> {
+                if (companyRepo.existsByPhone(details.getValue())) {
+                    yield "Phone Already Taken";
+                }
+                yield COMPPHONE + validated;
+            }
+            case "companyDomain" -> {
+                if (domainCheck) {
+                    if (companyRepo.existsByDomain(details.getValue())) {
+                        yield "Company Domain Already Taken";
+                    }
+                }
+                yield COMPDOMAIN + validated;
             }
             default -> "Given Field not for validation";
         };
@@ -207,6 +226,9 @@ public class AdminRegisterService {
             String correctOtp = otpStorage.get(phone);
             if (correctOtp != null && correctOtp.equals(enteredOtp)) {
                 otpStorage.remove(phone);
+               AdminRegister admin =  repo.findByName(request.get("name"));
+               admin.setEmailVerified(true);
+               repo.save(admin);
                 return "SUCCESS: OTP Verified Successfully";
             }
             return "INVALID: Invalid OTP";

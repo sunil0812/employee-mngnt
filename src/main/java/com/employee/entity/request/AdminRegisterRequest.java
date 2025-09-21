@@ -33,7 +33,7 @@ public class AdminRegisterRequest {
 
     @Schema(description = "Phone number of the employee", example = "+1234567890")
     @NotNull
-    @Pattern(regexp = "^\\+\\d{1,3}[- ]?\\d{10}$", message = "phone number doesn't match exactly")
+    @Pattern(regexp = "^\\+\\d{12}$", message = "phone number doesn't match exactly")
     private String phone;
 
     @Schema(description = "Gender of the employee", example = "Male")
@@ -42,7 +42,7 @@ public class AdminRegisterRequest {
 
     @NotNull
     @Schema(description = "Date of birth of the employee", example = "1990-01-01")
-    @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$", message = "Date Of Birth should be match the regex")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date Of Birth should be match the regex")
     private String dob;
 
     @Schema(description = "Address details of the employee")

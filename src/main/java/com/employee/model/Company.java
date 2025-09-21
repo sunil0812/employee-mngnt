@@ -16,8 +16,8 @@ public class Company {
     @NotNull(message = "Company name should not be null")
     private String name;
     @JsonProperty
-    @NotNull(message = "email No should not be null")
-    private String email;
+    @NotNull(message = "domain No should not be null")
+    private String domain;
     @JsonProperty
     @NotNull(message = "Phone No should not be null")
     private String phone;
