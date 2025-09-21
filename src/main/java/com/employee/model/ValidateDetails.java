@@ -18,8 +18,10 @@ public class ValidateDetails {
     @NotNull
     private String value;
 
-    public static String PHONE="PHONE: ";
-    public static String NAME="NAME: ";
-    public static String EMAIL="EMAIL: ";
-    public static String COMPNAME="COMPANY_NAME: ";
+    public static final String PHONE="ADMIN_PHONE: ";
+    public static final String NAME="ADMIN_NAME: ";
+    public static final String EMAIL="ADMIN_EMAIL: ";
+    public static final String COMPNAME="COMPANY_NAME: ";
+    public static final String COMPDOMAIN="COMPANY_DOMAIN: ";
+    public static final String COMPPHONE="COMPANY_PHONE: ";
 }

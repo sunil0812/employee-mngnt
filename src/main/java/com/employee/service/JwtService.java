@@ -14,7 +14,7 @@ public class JwtService {
     private final Key secretKey = Keys.hmacShaKeyFor("your-256-bit-secret-your-256-bit-secret".getBytes());
 
     public String generateToken(Map<String, Object> claims) {
-        long expirationMillis = 1000 * 60 * 30; // 30 minutes
+        long expirationMillis = 1000 * 60 * 15; // 15 minutes
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMillis);
 

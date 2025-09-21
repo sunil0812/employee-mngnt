@@ -14,6 +14,6 @@ public interface AdminRegisterRepo extends JpaRepository<AdminRegister, Long> {
 
     boolean existsByName(@NotNull String value);
 
-    @Query(value = "SELECT EXISTS (  SELECT 1  FROM admin_register.admin_data  WHERE CAST(company_details AS jsonb) ->> 'name' = :companyName)", nativeQuery = true)
-    boolean existsByCompanyName(@Param("companyName") String companyName);
+    @Query(value = "SELECT * FROM admin_register.admin_data  WHERE name= :name", nativeQuery = true)
+    AdminRegister findByName(@Param("name") String name);
 }

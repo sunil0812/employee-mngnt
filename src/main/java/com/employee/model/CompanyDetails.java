@@ -24,10 +24,10 @@ public class CompanyDetails {
     @NotNull
     private String name;
     @NotNull
-    private String email;
-    @NotNull
     private String phone;
     @NotNull
     private String address;
+    @NotNull
+    private String domain;
     private Timestamp createdAt;
 }
