@@ -91,7 +91,7 @@ public class EmployeeService {
         employee.setEmpType(emp.getEmpType());
         employee.setPassword(encoder.encode(employee.getEmpId()));
         employee.setPhone(emp.getPhone());
-        employee.setRole(validateRole(emp.getRole()).toString());
+        employee.setRole(validateRole(emp.getRole()));
         employee.setBankDetails(convertToJson(emp.getBankDetails()));
         employee.setGender(emp.getGender());
         employee.setAddress(convertToJson(emp.getAddress()));
@@ -150,11 +150,12 @@ public class EmployeeService {
             employee.setEmail(emp.getEmail());
             employee.setEmpType(emp.getEmpType());
             employee.setPhone(emp.getPhone());
-            employee.setRole(validateRole(emp.getRole()).toString());
+            employee.setRole(validateRole(emp.getRole()));
             employee.setBankDetails(convertToJson(emp.getBankDetails()));
             employee.setGender(emp.getGender());
             employee.setAddress(convertToJson(emp.getAddress()));
             employee.setDob(emp.getDob());
+            employee.setAdditionalInfo(mapper.writeValueAsString(emp.getAdditionalInfo()));
             if (validateTeamAndManager(emp)) {
                 Team team = teamRepo.findByName(emp.getTeamName());
                 List<String> members = team.getTeamMembers();

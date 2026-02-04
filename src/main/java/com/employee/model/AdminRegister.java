@@ -32,6 +32,7 @@ public class AdminRegister {
     private String address;
     private String bankDetails;
     private String companyDetails;
+    private String additionalInfo;
     private boolean emailVerified;
     private Timestamp createdAt;
 }

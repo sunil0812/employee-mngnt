@@ -89,6 +89,7 @@ public class AdminRegisterService {
                     .address(mapper.writeValueAsString(adminRegister.getAddress()))
                     .bankDetails(mapper.writeValueAsString(adminRegister.getBankDetails()))
                     .companyDetails(mapper.writeValueAsString(adminRegister.getCompanyDetails()))
+                    .additionalInfo(mapper.writeValueAsString(adminRegister.getAdditionalInfo()))
                     .build();
             repo.save(value);
             sendMailToAdminVerify(value.getEmail(), value.getPhone(),value.getName());
