@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Map;
 
 
 @Data
@@ -77,4 +78,7 @@ public class EmployeeEntity {
     @Schema(description = "Employee company data")
     @NotNull
     private Long companyDetails;
+
+    @Schema(description = "Additional Employee data")
+    private Map<String, String> additionalInfo;
 }

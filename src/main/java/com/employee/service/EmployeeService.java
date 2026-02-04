@@ -73,11 +73,15 @@ public class EmployeeService {
 
     @Transactional
     public Employee saveEmp(EmployeeEntity emp) {
-        log.info("New Employee For Role - {}", emp.getRole());
-        return Objects.equals(emp.getRole().toUpperCase(), EmployeeConstants.MANAGER.name()) ? saveManagerData(emp) : saveAllEmp(emp);
+        try {
+            log.info("New Employee For Role - {}", emp.getRole());
+            return Objects.equals(emp.getRole().toUpperCase(), EmployeeConstants.MANAGER.name()) ? saveManagerData(emp) : saveAllEmp(emp);
+        } catch (JsonProcessingException e) {
+            throw new EmployeeExceptions(e.getMessage());
+        }
     }
 
-    private Employee saveManagerData(EmployeeEntity emp) {
+    private Employee saveManagerData(EmployeeEntity emp) throws JsonProcessingException {
         Employee employee = new Employee();
         validatePhoneEmail(emp);
         employee.setEmpId(getEmpId(emp.getName()));
@@ -92,6 +96,7 @@ public class EmployeeService {
         employee.setGender(emp.getGender());
         employee.setAddress(convertToJson(emp.getAddress()));
         employee.setDob(emp.getDob());
+        employee.setAdditionalInfo(mapper.writeValueAsString(emp.getAdditionalInfo()));
         if (emp.getTeamName() != null) {
             Team exists = teamRepo.findByName(emp.getTeamName());
             if (exists == null) {

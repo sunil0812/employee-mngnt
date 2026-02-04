@@ -46,6 +46,7 @@ public class Employee {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String password;
+    private String additionalInfo;
 
 
 
