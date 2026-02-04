@@ -2,8 +2,11 @@ package com.employee.constants;
 
 import com.employee.exception.EmployeeExceptions;
 import lombok.Data;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public enum EmployeeConstants {
 
@@ -29,12 +32,14 @@ public enum EmployeeConstants {
         this.values = values;
     }
 
-    public static EmployeeConstants validateRole(String role) {
-        for (EmployeeConstants constant : EmployeeConstants.values()) {
-            if (constant.getValues().contains(role.toLowerCase())) {
-                return constant;
-            }
+    public static String validateRole(String role) {
+
+        String empRole = Arrays.stream(EmployeeConstants.values())
+                .filter(e -> e.getValues().stream().anyMatch(r -> r.equalsIgnoreCase(role)))
+                .map(EmployeeConstants::name).collect(Collectors.joining());
+        if (empRole.isBlank()) {
+            throw new EmployeeExceptions("Given Role Not found :" + role);
         }
-        throw new EmployeeExceptions("Given Role Not found :" + role);
+        return empRole;
     }
 }

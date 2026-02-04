@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -56,5 +58,8 @@ public class AdminRegisterRequest {
     @Schema(description = "Company details of the employee")
     @NotNull
     private Company companyDetails;
+
+    @Schema(description = "Additional Admin details")
+    private Map<String, String> additionalInfo;
 
 }
